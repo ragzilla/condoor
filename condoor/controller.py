@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 # Delegate following methods to _session class
 @delegate("_session", ("expect", "expect_exact", "expect_list", "compile_pattern_list", "sendline",
-                       "isalive", "sendcontrol", "send", "read_nonblocking", "setecho", "delaybeforesend"))
+                       "isalive", "sendcontrol", "send", "read_nonblocking", "setecho", "delaybeforesend",
+                       "waitnoecho"))
 class Controller(object):
     """Controller class which wraps the pyexpect.spawn class."""
 
