@@ -101,8 +101,12 @@ class SSH(Protocol):
 
     def disconnect(self, driver):
         """Disconnect using the protocol specific method."""
-        self.device.ctrl.sendline('\x03')
-        self.device.ctrl.sendline('\x04')
+        logger.debug("SSH disconnect")
+        try:
+            self.device.ctrl.sendline('\x03')
+            self.device.ctrl.sendline('\x04')
+        except OSError:
+            logger.debug("Protocol already disconnected")
 
     # FIXME: This needs to be fixed and tested
     @action
