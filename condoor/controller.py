@@ -56,7 +56,7 @@ class Controller(object):
                     maxread=65536,
                     searchwindowsize=4000,
                     env={"TERM": "VT100"},  # to avoid color control characters
-                    echo=False  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
+                    echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
                 rows, cols = self._session.getwinsize()
