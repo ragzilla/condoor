@@ -213,7 +213,6 @@ class FilteredFileHandler(logging.FileHandler):
     def __init__(self, filename, mode='a', encoding="utf-8", delay=0, pattern=None):
         """Initialize the FilteredFileHandler object."""
         self.pattern = pattern
-        self.encoding = encoding
         logging.FileHandler.__init__(self, filename, mode=mode, encoding=encoding, delay=delay)
 
     def _open(self):
@@ -256,7 +255,6 @@ def make_handler(log_dir, log_level):
             log_filename = os.path.join(log_dir, 'condoor.log')
             # FIXME: take pattern from pattern manager
             handler = FilteredFileHandler(log_filename, pattern=re.compile("s?ftp://.*:(.*)@"))
-            # handler = logging.FileHandler(log_filename)
 
         else:
             handler = logging.StreamHandler()

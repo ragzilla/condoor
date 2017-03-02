@@ -186,6 +186,9 @@ class Connection(object):
             ConnectionTimeoutError: If the connection timeout happened.
 
         """
+        logger.debug("-" * 20)
+        logger.debug("Connecting")
+
         if logfile:
             self.session_fd = logfile
 
@@ -219,6 +222,7 @@ class Connection(object):
         self._write_cache()
         elapsed = time.time() - begin
         self.emit_message("Target device connected in {:.2f}s.".format(elapsed), log_level=logging.INFO)
+        logger.debug("Connected")
         logger.debug("-" * 20)
 
     def reconnect(self, logfile=None, max_timeout=360, force_discovery=False):
