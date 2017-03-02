@@ -56,7 +56,7 @@ class Controller(object):
                     maxread=65536,
                     searchwindowsize=4000,
                     env={"TERM": "VT100"},  # to avoid color control characters
-                    echo=False  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
+                    echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
                 rows, cols = self._session.getwinsize()
@@ -86,11 +86,6 @@ class Controller(object):
         """Disconnect the controller."""
         if self._session and self._session.isalive():
             logger.debug("Disconnecting the sessions")
-            # self.sendline('\x03')  # pylint: disable=no-member
-            # self.sendline('\x04')  # pylint: disable=no-member
-            #
-            # self.sendcontrol(']')  # pylint: disable=no-member
-            # self.sendline('quit')  # pylint: disable=no-member
             self._session.close(force=True)
             self._session.wait()
         logger.debug("Disconnected")

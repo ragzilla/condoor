@@ -1,7 +1,7 @@
 language: python
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y telnet
+- sudo apt-get -qq update
+- sudo apt-get install -y telnet
 install:
 - pip install tox
 script:
@@ -10,7 +10,7 @@ deploy:
   provider: pypi
   user: kstaniek
   password:
-    secure: ZDWs6yN7WV1U9SrOx4hrqvxinESJRQimL8AhH/6GhvJ7WxIjnMGXV5/Gu9rIHzXNsSHdu5mTac0veN5M4IsbrZla9zRL+qdwX1i+eix46OxqlQ3VSOpRh1zTEKOKY2J8nv3wdER0u7YlM5tppkiTdrPy6kCoLxR8XSM8A0A8QCY6hCD+/cDL382AFhGVSEVMGucMMbcOyJO5t1Kmsfk1hJREnNMf96r30VFNsXyIorOQJRgc3vz9G+Kz/FFivKISNQCpMXgmxi2/0rONiETnNt4DVEO5bUrNqGn+BRWz/xHw4KgroCE6wDGhon/sUsRKo3AFUlBNhWmiMwyqs5UlNQQFTOKICSTI0taV6x4NJa/EuQsF8aBqXPj+o/sQ8HoA8/l4K0nA+z4uGd5SLRnuG78O+S+0J3Db97sVraU1o8AKdfKiO4lGUs55e4TfwZb9S/x9DQMx8zWEt1XdJUeLtT2EBg2zq7eCMCGZzttDfDaPwSiXwX8IP9/877+QCf6O2KEmxnPzOQNHC3pvJLc/4U0DupM26UTLgXlX/af+9GzwuQgN3kuTTdfywTBmsLagpAEkOkesOKfNB7+FkyD0DNPw2NcE9zywReLvMkO4/8IKMzO4y5VXcc3uiKK+THq8Xmw0UqyPw9nR+oxqHRnPE0/8WHiHG8NFiz2Lr6Tl0zU=
+    secure: lZnumViwbaDRBWJbVujdr3ejuNki4i2P2+WsMQq8bksj7i+AJiza60UC2Z35t/Hu05dZ/o2FxgE8aBy/FjGzT+BNDI8QxYCGiBIDjNcdPNGhcFNGeY95Yyug7QuCirzBZYYwN56oK//RkEftJxb06lmxwF26w6yskzAAGaVr6aOHEi4rGk2+8W5SPS9U/GM6BeE0Q75JbWaJEV6YhheeUBvDlYZm69KF4tJ8zy1B/QJ1iRoCZb1HISlWJpw0XGkWiJ4IM9O5/EXsMFQDvsPEfYb5hBmtqfknl1pK6GeQzaYWI/WwoJTRLeWnuTbrk3+XWtmwPoPnQBWVP8C+JFi5voGkPbBxAUJvebDnQwW9GZ0uJLU98U1JIYjJ7R0HnJo1zfeOb0hqGkcf2OI5NEI/gtSAiUc/MV5IYtalprDRNS2Dicbz8a/D6TLu24XrATDTLN3c1dt2beSknZXd6NNhBQQz7qb4BZOA/eZBsKhixAG0p+k8fBtfxfU5bOylLdlFtV05qRB0qHqRka6UolpHj01UUrahIyWZYyrJxW6qovQhCmY+m4kJjsnElCXMibQvtGuFe5FLA+Sfm1YqZuhvRCKnQ35Ua2F6Boa86+PAO+qOYss3YW2Sr3taxOttOjg9n7mxzw7qK+enTKnaPZ9s3ni+ePkrXk6MviJscMb20gE=
   on:
     tags: true
     distributions: sdist bdist_wheel
