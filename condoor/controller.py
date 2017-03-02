@@ -86,11 +86,6 @@ class Controller(object):
         """Disconnect the controller."""
         if self._session and self._session.isalive():
             logger.debug("Disconnecting the sessions")
-            # self.sendline('\x03')  # pylint: disable=no-member
-            # self.sendline('\x04')  # pylint: disable=no-member
-            #
-            # self.sendcontrol(']')  # pylint: disable=no-member
-            # self.sendline('quit')  # pylint: disable=no-member
             self._session.close(force=True)
             self._session.wait()
         logger.debug("Disconnected")

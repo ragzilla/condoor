@@ -9,6 +9,7 @@ from condoor.exceptions import InvalidHopInfoError
 protocol2port_map = {
     'telnet': 23,
     'ssh': 22,
+    'console': None,
 }
 
 
@@ -110,7 +111,8 @@ class HopInfo(object):
 
     def is_valid(self):
         """Return if protocol is valid."""
-        if self.protocol not in ['telnet', 'ssh']:
+        print(self.protocol)
+        if self.protocol not in ['telnet', 'ssh', 'console']:
             return False
         return True
 
