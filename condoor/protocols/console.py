@@ -9,7 +9,7 @@ from condoor.fsm import FSM
 from condoor.utils import pattern_to_str
 from condoor.protocols.base import Protocol
 from condoor.actions import a_send, a_send_password, a_authentication_error, a_unable_to_connect,\
-    a_save_last_pattern, a_standby_console, a_send_username
+    a_save_last_pattern, a_send_username
 
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
 from condoor.config import CONF
