@@ -38,6 +38,7 @@ def a_send_password(password, ctx):
     """
     if password:
         # ctx.ctrl.setecho(False)
+        ctx.ctrl.waitnoecho(2)
         ctx.ctrl.sendline(password)
         # ctx.ctrl.setecho(True)
         return True

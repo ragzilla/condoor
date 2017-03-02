@@ -184,12 +184,14 @@ class Device(object):
 
     def disconnect(self):
         """Disconnect the device."""
+        logger.debug("Disconnecting: {}".format(self))
         if self.connected:
             if self.protocol:
                 self.protocol.disconnect(self.driver)
                 self.protocol = None
-            if self.ctrl:
-                self.ctrl = None
+
+            self.connected = False
+            self.ctrl = None
 
     def send(self, cmd="", timeout=60, wait_for_string=None):
         """Send the command to the device and return the output.

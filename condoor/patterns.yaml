@@ -9,7 +9,7 @@ generic:
   password: '[P|p]assword:\s?'
   privacy_filter: 's?ftp://.*:(.*)@'
   # to capture the platform string from show version
-  pid2platform: '([A-Z]{3}[-| ]?[0-9]{3,4})'
+  pid2platform: '([A-Z]{3}[-| ]?[0-9]{2,4})'
   # platform string
   platform: '^(?:  )?cisco (.*?) '
   version: 'Version (.*?)(?:\[| |$)'

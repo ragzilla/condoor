@@ -102,7 +102,11 @@ class Telnet(Protocol):
         """Disconnect using protocol specific method."""
         # self.device.ctrl.sendcontrol(']')
         # self.device.ctrl.sendline('quit')
-        self.device.ctrl.send(chr(4))
+        logger.debug("TELNET disconnect")
+        try:
+            self.device.ctrl.send(chr(4))
+        except OSError:
+            logger.debug("Protocol already disconnected")
 
 
 class TelnetConsole(Telnet):

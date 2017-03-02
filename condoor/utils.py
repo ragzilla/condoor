@@ -1,6 +1,7 @@
 """Provides a set of functions nad clases for different purpose."""
 
 import logging
+from logging.handlers import WatchedFileHandler
 import socket
 import codecs
 import time
@@ -207,14 +208,13 @@ class FilteredFile(object):
         return self
 
 
-class FilteredFileHandler(logging.FileHandler):
+class FilteredFileHandler(WatchedFileHandler):
     """Class defining custom FileHandler for filtering sensitive information."""
 
     def __init__(self, filename, mode='a', encoding="utf-8", delay=0, pattern=None):
         """Initialize the FilteredFileHandler object."""
         self.pattern = pattern
-        self.encoding = encoding
-        logging.FileHandler.__init__(self, filename, mode=mode, encoding=encoding, delay=delay)
+        WatchedFileHandler.__init__(self, filename, mode=mode, encoding=encoding, delay=delay)
 
     def _open(self):
         return FilteredFile(self.baseFilename, mode=self.mode, encoding=self.encoding, pattern=self.pattern)
@@ -256,7 +256,6 @@ def make_handler(log_dir, log_level):
             log_filename = os.path.join(log_dir, 'condoor.log')
             # FIXME: take pattern from pattern manager
             handler = FilteredFileHandler(log_filename, pattern=re.compile("s?ftp://.*:(.*)@"))
-            # handler = logging.FileHandler(log_filename)
 
         else:
             handler = logging.StreamHandler()
