@@ -194,6 +194,10 @@ class NCS1KHandler(XRHandler):
         self.RUNSHELL = False
 
 
+class NCS4KHandler(XRHandler):
+    platform = "NCS4K"
+
+
 class NCS5500Handler(XRHandler):
     platform = "NCS5500"
 

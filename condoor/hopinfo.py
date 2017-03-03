@@ -111,7 +111,6 @@ class HopInfo(object):
 
     def is_valid(self):
         """Return if protocol is valid."""
-        print(self.protocol)
         if self.protocol not in ['telnet', 'ssh', 'console']:
             return False
         return True

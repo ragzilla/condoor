@@ -1,0 +1,9 @@
+Fri Mar  3 08:46:36.926 UTC
+
+root connected from 127.0.0.1 using console on xr-vm_node0_RP0_CPU0
+sysadmin-vm:0_RP0# terminal length 0
+Fri Mar  3  08:46:37.444 UTC
+sysadmin-vm:0_RP0# show install request
+Fri Mar  3  08:46:37.493 UTC
+ No install operation in progress
+sysadmin-vm:0_RP0#

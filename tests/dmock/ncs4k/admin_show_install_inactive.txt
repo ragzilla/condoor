@@ -1,0 +1,16 @@
+Fri Mar  3 08:45:47.094 UTC
+
+root connected from 127.0.0.1 using console on xr-vm_node0_RP0_CPU0
+sysadmin-vm:0_RP0# terminal length 0
+Fri Mar  3  08:45:47.623 UTC
+sysadmin-vm:0_RP0# show install inactive
+Fri Mar  3  08:45:47.672 UTC
+ Node 0/RP0 [RP]
+    Inactive Packages:
+       ncs4k-mini-x-6.1.12
+       ncs4k-sysadmin-6.1.12
+ Node 0/RP1 [RP]
+    Inactive Packages:
+       ncs4k-mini-x-6.1.12
+       ncs4k-sysadmin-6.1.12
+sysadmin-vm:0_RP0#
