@@ -40,6 +40,7 @@ generic:
   # prompts for platforms detection
   prompt_detection:
     - XR
+    - eXR
     - XRv
     - Calvados
     - Windriver
@@ -109,9 +110,10 @@ XRv:
     description: "Command syntax error"
 
 eXR:
-  prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
+  # prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
+  prompt: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(?P<hostname>.*?)(\([^()]*\))?#'
   prompt_dynamic: '{prompt}(\([^()]*\))?#'
-  prompt_default: 'RP/[0-3]/RS?P[0-1]/CPU[0-1]:ios#'
+  prompt_default: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:ios#'
   rommon: 'rommon \d+ >'
   xml: 'XML> '
   calvados: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?.*#'

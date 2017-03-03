@@ -1,0 +1,16 @@
+Fri Mar  3 08:45:19.910 UTC
+
+root connected from 127.0.0.1 using console on xr-vm_node0_RP0_CPU0
+sysadmin-vm:0_RP0# terminal length 0
+Fri Mar  3  08:45:20.427 UTC
+sysadmin-vm:0_RP0# show install committed
+Fri Mar  3  08:45:20.529 UTC
+ Node 0/RP0 [RP]
+    Committed Packages: 1
+       ncs4k-sysadmin-6.0.2.10I version=6.0.2.10I [Boot image]
+
+ Node 0/RP1 [RP]
+    Committed Packages: 1
+       ncs4k-sysadmin-6.0.2.10I version=6.0.2.10I [Boot image]
+
+sysadmin-vm:0_RP0#

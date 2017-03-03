@@ -1,0 +1,11 @@
+Fri Mar  3 08:46:59.088 UTC
+
+root connected from 127.0.0.1 using console on xr-vm_node0_RP0_CPU0
+sysadmin-vm:0_RP0# terminal length 0
+Fri Mar  3  08:46:59.612 UTC
+sysadmin-vm:0_RP0# show inventory chassis
+Fri Mar  3  08:46:59.661 UTC
+
+ Name: Rack 0                Descr: NCS 4016 shelf assembly - DC Power
+ PID: NCS4016-SA-DC          VID: V01                   SN: SAL1931LDUG
+sysadmin-vm:0_RP0#

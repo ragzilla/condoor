@@ -1,0 +1,4 @@
+Fri Mar  3 08:50:17.279 UTC
+   Line            User                 Service  Conns   Idle        Location
+   vty0            CISCO15              ssh          0  00:01:42     10.201.213.19
+*  vty1            root                 telnet       0  00:00:01     10.60.106.84

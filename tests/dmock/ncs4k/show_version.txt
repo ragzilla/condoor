@@ -1,0 +1,15 @@
+Fri Mar  3 08:50:32.278 UTC
+
+Cisco IOS XR Software, Version 6.0.2.10I
+Copyright (c) 2013-2016 by Cisco Systems, Inc.
+
+Build Information:
+ Built By     : ahoang
+ Built On     : Sun Jun 19 17:16:50 PDT 2016
+ Build Host   : iox-lnx-016
+ Workspace    : /auto/iox-lnx-016-san1/nightly/r60y_16.06.19C/ncs4k
+ Version      : 6.0.2.10I
+ Location     : /opt/cisco/XR/packages/
+
+cisco NCS-4000 () processor
+System uptime is 3 weeks, 2 days, 11 hours, 47 minutes

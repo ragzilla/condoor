@@ -1,0 +1,6 @@
+Fri Mar  3 08:49:22.935 UTC
+4 inactive package(s) found:
+    ncs4k-mini-x-6.1.12
+    ncs4k-mgbl-6.1.12
+    ncs4k-mpls-6.1.12
+    ncs4k-k9sec-6.1.12
