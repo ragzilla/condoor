@@ -171,7 +171,7 @@ Calvados:
   prompt: '^sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'
   prompt_dynamic: '{prompt}(\([^()]*\))?#'
   prompt_default: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]#'
-  exr: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(.*?)(\([^()]*\))?#'
+  exr: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(.*?)(\([^()]*\))?#'
   windriver: '\[sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:(.*)\]\$'
   # to check in show user if calvados is connected from eXR
   connected_locally: '127.0.0.1 console'
