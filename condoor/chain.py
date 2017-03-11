@@ -134,9 +134,9 @@ class Chain(object):
         except IndexError:
             pass
 
-    def send(self, cmd, timeout, wait_for_string):
+    def send(self, cmd, timeout, wait_for_string, password):
         """Send command to the target device."""
-        return self.target_device.send(cmd, timeout=timeout, wait_for_string=wait_for_string)
+        return self.target_device.send(cmd, timeout=timeout, wait_for_string=wait_for_string, password=password)
 
     def update(self, data):
         """Update the chain object with the predefined data."""

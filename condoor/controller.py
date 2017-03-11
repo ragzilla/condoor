@@ -76,11 +76,15 @@ class Controller(object):
             self._session.logfile_read = self._logfile_fd
             self.connected = True
 
-    def send_command(self, cmd):
+    def send_command(self, cmd, password=False):
         """Send command."""
-        self.send(cmd)  # pylint: disable=no-member
-        self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
-        self.sendline()  # pylint: disable=no-member
+        if password:
+            self.waitnoecho(5)  # pylint: disable=no-member
+            self.sendline(password)  # pylint: disable=no-member
+        else:
+            self.send(cmd)  # pylint: disable=no-member
+            self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
+            self.sendline()  # pylint: disable=no-member
 
     def disconnect(self):
         """Disconnect the controller."""

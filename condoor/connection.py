@@ -315,7 +315,7 @@ class Connection(object):
         self.emit_message("Target device connected in {:.0f}s.".format(elapsed), log_level=logging.INFO)
         logger.debug("-" * 20)
 
-    def send(self, cmd="", timeout=60, wait_for_string=None):
+    def send(self, cmd="", timeout=60, wait_for_string=None, password=False):
         """Send the command to the device and return the output.
 
         Args:
@@ -324,6 +324,8 @@ class Connection(object):
             wait_for_string (str): This is optional string that driver
             waits for after command execution. If none the detected
             prompt will be used.
+            password (bool): If true cmd representing password is not logged
+                and condoor waits for noecho.
 
         Returns:
             A string containing the command output.
@@ -333,7 +335,7 @@ class Connection(object):
             CommandSyntaxError: Command syntax error or unknown command.
             CommandTimeoutError: Timeout during command execution
         """
-        return self._chain.send(cmd, timeout, wait_for_string)
+        return self._chain.send(cmd, timeout, wait_for_string, password)
 
     def disconnect(self):
         """Disconnect the session from the device and all the jumphosts in the path."""
