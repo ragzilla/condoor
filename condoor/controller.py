@@ -80,7 +80,7 @@ class Controller(object):
         """Send command."""
         if password:
             self.waitnoecho(5)  # pylint: disable=no-member
-            self.sendline(password)  # pylint: disable=no-member
+            self.sendline(cmd)  # pylint: disable=no-member
         else:
             self.send(cmd)  # pylint: disable=no-member
             self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
