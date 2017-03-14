@@ -193,7 +193,7 @@ class Device(object):
             self.connected = False
             self.ctrl = None
 
-    def send(self, cmd="", timeout=60, wait_for_string=None):
+    def send(self, cmd="", timeout=60, wait_for_string=None, password=False):
         """Send the command to the device and return the output.
 
         Args:
@@ -202,6 +202,8 @@ class Device(object):
             wait_for_string (str): This is optional string that driver
                 waits for after command execution. If none the detected
                 prompt will be used.
+            password (bool): If true cmd representing password is not logged
+                and condoor waits for noecho.
 
         Returns:
             A string containing the command output.
@@ -213,26 +215,33 @@ class Device(object):
         """
         if self.connected:
             output = ''
-            logger.debug("Sending command: '{}'".format(cmd))
+            if password:
+                logger.debug("Sending password")
+            else:
+                logger.debug("Sending command: '{}'".format(cmd))
 
             try:
-                output = self.execute_command(cmd, timeout, wait_for_string)
+                output = self.execute_command(cmd, timeout, wait_for_string, password)
             except ConnectionError:
                 logger.error("Connection lost. Disconnecting.")
                 # self.disconnect()
                 raise
 
-            logger.info("Command executed successfully: '{}'".format(cmd))
+            if password:
+                logger.info("Password sent successfully")
+            else:
+                logger.info("Command executed successfully: '{}'".format(cmd))
+
             return output
 
         else:
             raise ConnectionError("Device not connected", host=self.hostname)
 
-    def execute_command(self, cmd, timeout, wait_for_string):
+    def execute_command(self, cmd, timeout, wait_for_string, password):
         """Execute command."""
         try:
             self.last_command_result = None
-            self.ctrl.send_command(cmd)
+            self.ctrl.send_command(cmd, password=password)
             if wait_for_string is None:
                 wait_for_string = self.prompt_re
 
@@ -246,8 +255,9 @@ class Device(object):
             else:
                 output = self.ctrl.before.replace('\r', '')
 
-            second_line_index = output.find('\n') + 1
-            output = output[second_line_index:]
+            # not needed. Fixes the issue #11
+            # second_line_index = output.find('\n') + 1
+            # output = output[second_line_index:]
             return output
 
         except CommandSyntaxError as e:  # pylint: disable=invalid-name
