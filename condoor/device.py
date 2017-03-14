@@ -255,8 +255,9 @@ class Device(object):
             else:
                 output = self.ctrl.before.replace('\r', '')
 
-            second_line_index = output.find('\n') + 1
-            output = output[second_line_index:]
+            # not needed. Fixes the issue #11
+            # second_line_index = output.find('\n') + 1
+            # output = output[second_line_index:]
             return output
 
         except CommandSyntaxError as e:  # pylint: disable=invalid-name
