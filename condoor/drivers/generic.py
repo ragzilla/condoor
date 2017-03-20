@@ -179,7 +179,8 @@ class Driver(object):
     def update_driver(self, prompt):
         """Update driver based on the prompt."""
         logger.debug(prompt)
-        platform = pattern_manager.platform(prompt)
+        # Do not update the driver if not target device
+        platform = pattern_manager.platform(prompt) if self.device.is_target else None
         if platform:
             logger.debug('{} -> {}'.format(self.platform, platform))
             return platform
