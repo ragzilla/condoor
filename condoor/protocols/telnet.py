@@ -75,7 +75,7 @@ class Telnet(Protocol):
         """Authenticate using the SSH protocol specific FSM."""
         #                      0                      1                    2                    3
         events = [driver.username_re, driver.password_re, self.device.prompt_re, driver.rommon_re,
-                  #       4             5                   6                       7                8
+                  #       4                              5                              6           7
                   driver.unable_to_connect_re, driver.authentication_error_re, pexpect.TIMEOUT, pexpect.EOF]
 
         transitions = [
