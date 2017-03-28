@@ -81,9 +81,12 @@ class Connection(object):
         self.log_session = log_session
         top_logger = logging.getLogger("condoor")
 
-        if len(top_logger.handlers) == 0:
-            self._handler = make_handler(log_dir, log_level)
-            top_logger.addHandler(self._handler)
+        # remove existing handlers in case log_dir has changed.
+        for handler in top_logger.handlers:
+            top_logger.removeHandler(handler)
+
+        self._handler = make_handler(log_dir, log_level)
+        top_logger.addHandler(self._handler)
 
         top_logger.setLevel(log_level)
 

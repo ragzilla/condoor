@@ -7,7 +7,7 @@ from condoor.drivers.generic import Driver as Generic
 from condoor import TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
-    a_message_callback
+    a_message_callback, a_return_and_reconnect
 
 logger = logging.getLogger(__name__)
 
@@ -53,10 +53,10 @@ class Driver(Generic):
         RELOAD_NA = re.compile("Reload to the ROM monitor disallowed from a telnet line")
         #           0          1      2                3                   4                  5
         events = [RELOAD_NA, DONE, PROCEED, CONFIGURATION_IN_PROCESS, self.rommon_re, self.press_return_re,
-                  #   6               7                       8                     9      10        11
-                  CONSOLE, CONFIGURATION_COMPLETED, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF, self.reload_cmd,
-                  #    12                    13                     14
-                  ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
+                  #   6               7                   8                     9                   10       11
+                  CONSOLE, CONFIGURATION_COMPLETED, self.username_re, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF,
+                  #    12                    13                     14                15
+                  self.reload_cmd, ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
 
         transitions = [
             (RELOAD_NA, [0], -1, a_reload_na, 0),
@@ -68,15 +68,16 @@ class Driver(Generic):
             (CONSOLE, [0, 1, 3, 4], 5, None, 600),
             (self.press_return_re, [5], 6, partial(a_send, "\r"), 300),
             # configure root username and password the same as used for device connection.
-            (RECONFIGURE_USERNAME_PROMPT, [6, 7], 8, None, 10),
+            (RECONFIGURE_USERNAME_PROMPT, [6, 7, 10], 8, None, 10),
             (ROOT_USERNAME_PROMPT, [8], 9, partial(a_send_username, self.device.node_info.username), 1),
             (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
-            (CONFIGURATION_IN_PROCESS, [6, 9], 7, None, 180),
-            (CONFIGURATION_COMPLETED, [7], -1, a_reconnect, 0),
+            (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 180),
+            (CONFIGURATION_COMPLETED, [10], -1, a_reconnect, 0),
+            (self.username_re, [7], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
             (TIMEOUT, [6], 7, partial(a_send, "\r"), 180),
-            (TIMEOUT, [7], -1, ConnectionAuthenticationError("Unable to reconnect after reloading"), 0),
+            (TIMEOUT, [7, 10], -1, ConnectionAuthenticationError("Unable to reconnect after reloading"), 0),
         ]
 
         fsm = FSM("RELOAD", self.device, events, transitions, timeout=600)

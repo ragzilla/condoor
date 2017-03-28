@@ -78,13 +78,17 @@ class Controller(object):
 
     def send_command(self, cmd, password=False):
         """Send command."""
-        if password:
-            self.waitnoecho(5)  # pylint: disable=no-member
-            self.sendline(cmd)  # pylint: disable=no-member
-        else:
-            self.send(cmd)  # pylint: disable=no-member
-            self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
-            self.sendline()  # pylint: disable=no-member
+        try:
+            if password:
+                self.waitnoecho(5)  # pylint: disable=no-member
+                self.sendline(cmd)  # pylint: disable=no-member
+            else:
+                self.send(cmd)  # pylint: disable=no-member
+                self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
+                self.sendline()  # pylint: disable=no-member
+        except OSError:
+            logger.error("Session already disconnected.")
+            raise ConnectionError("Session already disconnected")
 
     def disconnect(self):
         """Disconnect the controller."""

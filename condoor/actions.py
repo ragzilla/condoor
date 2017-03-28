@@ -165,7 +165,7 @@ def a_reconnect(ctx):
 def a_return_and_reconnect(ctx):
     """Send new line and reconnect."""
     ctx.ctrl.send("\r")
-    ctx.ctrl.connect(ctx.device)
+    ctx.device.connect(ctx.ctrl)
     return True
 
 

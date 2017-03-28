@@ -75,7 +75,7 @@ class Telnet(Protocol):
         """Authenticate using the SSH protocol specific FSM."""
         #                      0                      1                    2                    3
         events = [driver.username_re, driver.password_re, self.device.prompt_re, driver.rommon_re,
-                  #       4             5                   6                       7                8
+                  #       4                              5                              6           7
                   driver.unable_to_connect_re, driver.authentication_error_re, pexpect.TIMEOUT, pexpect.EOF]
 
         transitions = [
@@ -147,12 +147,13 @@ class TelnetConsole(Telnet):
 
     def disconnect(self, driver):
         """Disconnect from the console."""
-        while self.device.mode != 'global':
-            self.device.send('exit')
+        logger.debug("TELNETCONSOLE disconnect")
+        try:
+            while self.device.mode != 'global':
+                self.device.send('exit')
 
-        self.device.send('exit', wait_for_string=driver.press_return_re)
+            self.device.send('exit', wait_for_string=driver.press_return_re)
 
-        self.device.ctrl.send(chr(4))
-
-        # self.device.ctrl.sendcontrol(']')
-        # self.device.ctrl.sendline('quit')
+            self.device.ctrl.send(chr(4))
+        except OSError:
+            logger.debug("TELNETCONSOLE already disconnected")
