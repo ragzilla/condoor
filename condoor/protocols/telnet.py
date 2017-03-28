@@ -147,12 +147,13 @@ class TelnetConsole(Telnet):
 
     def disconnect(self, driver):
         """Disconnect from the console."""
-        while self.device.mode != 'global':
-            self.device.send('exit')
+        logger.debug("TELNETCONSOLE disconnect")
+        try:
+            while self.device.mode != 'global':
+                self.device.send('exit')
 
-        self.device.send('exit', wait_for_string=driver.press_return_re)
+            self.device.send('exit', wait_for_string=driver.press_return_re)
 
-        self.device.ctrl.send(chr(4))
-
-        # self.device.ctrl.sendcontrol(']')
-        # self.device.ctrl.sendline('quit')
+            self.device.ctrl.send(chr(4))
+        except OSError:
+            logger.debug("TELNETCONSOLE already disconnected")
