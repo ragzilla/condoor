@@ -113,6 +113,7 @@ class Driver(Generic):
 
     def reload(self, reload_timeout, save_config):
         """Reload the device."""
+        MAX_BOOT_TIME = 1800  # 30 minutes - TODO(klstanie): move to config
         RELOAD_PROMPT = re.compile(re.escape("Reload hardware module ? [no,yes]"))
         START_TO_BACKUP = re.compile("Status report.*START TO BACKUP")
         BACKUP_HAS_COMPLETED_SUCCESSFULLY = re.compile("Status report.*BACKUP HAS COMPLETED SUCCESSFULLY")
@@ -128,8 +129,12 @@ class Driver(Generic):
         #           #    12                    13                     14
         #           ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
 
+        #           1                  2              3                     4                          5     6
         events = [self.reload_cmd, RELOAD_PROMPT, START_TO_BACKUP, BACKUP_HAS_COMPLETED_SUCCESSFULLY, DONE, BOOTING,
-                  CONSOLE, self.press_return_re, CONFIGURATION_COMPLETED, CONFIGURATION_IN_PROCESS, EOF]
+                  #   7                   8               9                       10                 11
+                  CONSOLE, self.press_return_re, CONFIGURATION_COMPLETED, CONFIGURATION_IN_PROCESS, EOF,
+                  #   12
+                  pexpect.TIMEOUT]
 
         transitions = [
             # do I really need to clean the cmd
@@ -138,12 +143,13 @@ class Driver(Generic):
             (BACKUP_HAS_COMPLETED_SUCCESSFULLY, [2], 3, a_message_callback, 10),
             (DONE, [3], 4, None, 600),
             (self.rommon_re, [0, 4], 5, partial(a_send_boot, "boot"), 600),
-            (BOOTING, [0, 4], 5, a_message_callback, 600),
+            (BOOTING, [0, 4], 5, a_message_callback, MAX_BOOT_TIME),
             (CONSOLE, [0, 5], 6, None, 600),
             (self.press_return_re, [6], 7, partial(a_send, "\r"), 300),
             (CONFIGURATION_IN_PROCESS, [7], 8, None, 180),
             (CONFIGURATION_COMPLETED, [8], -1, a_reconnect, 0),
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
+            (pexpect.TIMEOUT, [5], -1, ConnectionError("Boot process took more than {}s".format(MAX_BOOT_TIME)), 0),
 
             # (RELOAD_NA, [1], -1, a_reload_na, 0),
             # (DONE, [1], 2, None, 120),
