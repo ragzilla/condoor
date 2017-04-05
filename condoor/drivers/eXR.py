@@ -96,7 +96,7 @@ class Driver(Generic):
             # admin command to switch to calvados
             (self.calvados_re, [2], 3, None, _C['calvados_term_wait_time']),
             # getting the prompt only
-            (pexpect.TIMEOUT, [3], 0, partial(a_send, "\r"), 0),
+            (pexpect.TIMEOUT, [3], 0, partial(a_send, "\r\r"), timeout),
             # term len
             (self.calvados_term_length, [3], 4, None, 0),
             # ignore for command start
