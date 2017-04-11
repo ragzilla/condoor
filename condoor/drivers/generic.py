@@ -297,7 +297,9 @@ class Driver(object):
         patterns = [pattern_manager.pattern(
             self.platform, pattern_name, compiled=False) for pattern_name in self.target_prompt_components]
 
-        patterns_re = "|".join(patterns).format(prompt=re.escape(prompt[:-1]))
+        hostname = self.update_hostname(prompt)
+        # patterns_re = "|".join(patterns).format(prompt=re.escape(prompt[:-1]))
+        patterns_re = "|".join(patterns).format(hostname=re.escape(hostname))
 
         try:
             prompt_re = re.compile(patterns_re)

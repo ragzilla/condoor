@@ -4,7 +4,8 @@ generic:
   # standby to hack the nexus case when standby is a part of prompt
   prompt: '(?P<hostname>.*?(?<!\(standby\)))[#>\$]'
   # prompt: '(?P<hostname>.*?)[#>\$]'
-  prompt_dynamic: '{prompt}[#>]'
+  # prompt_dynamic: '{prompt}[#>]'
+  prompt_dynamic: '{hostname}[#>]'
   username: '[U|u]sername:\s|login:\s?'
   password: '[P|p]assword:\s?'
   privacy_filter: 's?ftp://.*:(.*)@'
@@ -71,7 +72,7 @@ generic:
 
 jumphost:
   prompt: '\$\s?|>\s?|#\s?|%\s?|\[.*:~\]'
-  prompt_dynamic: '{prompt}'
+  prompt_dynamic: '{hostname}'
   # do not match 'Last login: Wed ....'
   username: '[U|u]sername:\s|^.*(?<![Ll]ast )login:'
   password: '[P|p]assword:\s?$'
@@ -82,7 +83,8 @@ jumphost:
 
 XR:
   prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
-  prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  prompt_dynamic: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:?{hostname}(\([^()]*\))?#'
   prompt_default: 'RP/[0-3]/RS?P[0-1]/CPU[0-1]:ios#'
   rommon: 'rommon \d+ >'
   xml: 'XML> '
@@ -96,7 +98,8 @@ XR:
 
 XRv:
   prompt: 'RP\/0\/0\/CPU0:(?P<hostname>.*?)(\([^()]*\))?#'
-  prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  prompt_dynamic: 'RP\/0\/0\/CPU0:?{hostname}(\([^()]*\))?#'
   prompt_default: 'RP\/0\/0\/CPU0:ios#'
   xml: 'XML> '
   username: '[Uu]sername: '
@@ -112,7 +115,8 @@ XRv:
 eXR:
   # prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
   prompt: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(?P<hostname>.*?)(\([^()]*\))?#'
-  prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  prompt_dynamic: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:?{hostname}(\([^()]*\))?#'
   prompt_default: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:ios#'
   rommon: 'rommon \d+ >'
   xml: 'XML> '
@@ -128,7 +132,8 @@ eXR:
 
 IOS:
   prompt: '^(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
-  prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
+  prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
   rommon: 'rommon \d+ >|rommon>'
   password: 'Password: '
@@ -143,7 +148,8 @@ IOS:
 
 XE:
   prompt: '^(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
-  prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
+  prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
   rommon: 'rommon \d+ >|rommon>'
   password: 'Password: '
@@ -155,7 +161,8 @@ XE:
 
 NX-OS:
   prompt: '^(?P<hostname>.*?)(\([^()]*\))?#'
-  prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  prompt_dynamic: '{hostname}(\([^()]*\))?#'
   prompt_default: 'switch#'
   password: 'Password: '
   username: '(.*?) login: '
@@ -169,7 +176,8 @@ NX-OS:
 
 Calvados:
   prompt: '^sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'
-  prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  # prompt_dynamic: '{prompt}(\([^()]*\))?#'
+  prompt_dynamic: '{hostname}(\([^()]*\))?#'
   prompt_default: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]#'
   exr: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(.*?)(\([^()]*\))?#'
   windriver: '\[sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:(.*)\]\$'
@@ -181,7 +189,8 @@ Calvados:
 
 Windriver:
   prompt: '^\[(?P<hostname>sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]):(.*)\]\$'
-  prompt_dynamic: '{prompt}\$'
+  # prompt_dynamic: '{prompt}\$'
+  prompt_dynamic: '{hostname}\$'
   prompt_default: '\[(?P<hostname>^sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]):(.*)\]\$'
   calvados: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?:.*)?(\([^()]*\))?#'
   lc: '\[host:~\]\$'

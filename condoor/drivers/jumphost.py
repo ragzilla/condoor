@@ -46,7 +46,7 @@ class Driver(Generic):
         patterns = [pattern_manager.pattern(
             self.platform, pattern_name, compiled=False) for pattern_name in self.target_prompt_components]
 
-        patterns_re = "|".join(patterns).format(prompt=re.escape(prompt))
+        patterns_re = "|".join(patterns).format(hostname=re.escape(prompt))
 
         try:
             prompt_re = re.compile(patterns_re)
