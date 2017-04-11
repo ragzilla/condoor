@@ -2,7 +2,7 @@
 generic:
   #prompt: '(?P<hostname>[\w\-]+)[#>]'
   # standby to hack the nexus case when standby is a part of prompt
-  prompt: '(?P<hostname>.*?(?<!\(standby\)))[#>\$]'
+  prompt: '(?P<hostname>.*?(?<!\(standby\))(?<!\-stby))[#>\$]'
   # prompt: '(?P<hostname>.*?)[#>\$]'
   prompt_dynamic: '{prompt}[#>]'
   username: '[U|u]sername:\s|login:\s?'

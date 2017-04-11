@@ -46,6 +46,7 @@ class Telnet(Protocol):
                   #       8                              9              10            11
                   driver.unable_to_connect_re, driver.timeout_re, pexpect.TIMEOUT, PASSWORD_OK]
 
+        print(driver.standby_re.pattern)
         transitions = [
             (ESCAPE_CHAR, [0], 1, None, _C['esc_char_timeout']),
             (driver.press_return_re, [0, 1], 1, partial(a_send, "\r\n"), 10),
@@ -100,11 +101,11 @@ class Telnet(Protocol):
 
     def disconnect(self, device):
         """Disconnect using protocol specific method."""
-        # self.device.ctrl.sendcontrol(']')
-        # self.device.ctrl.sendline('quit')
         logger.debug("TELNET disconnect")
         try:
-            self.device.ctrl.send(chr(4))
+            self.device.ctrl.sendcontrol(']')
+            self.device.ctrl.sendline('quit')
+            # self.device.ctrl.send(chr(4))
         except OSError:
             logger.debug("Protocol already disconnected")
 
@@ -157,6 +158,8 @@ class TelnetConsole(Telnet):
             logger.debug("ELNETCONSOLE unable to get the root prompt")
 
         try:
-            self.device.ctrl.send(chr(4))
+            self.device.ctrl.sendcontrol(']')
+            self.device.ctrl.sendline('quit')
+            #self.device.ctrl.send(chr(4))
         except OSError:
             logger.debug("TELNETCONSOLE already disconnected")

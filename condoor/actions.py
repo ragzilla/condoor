@@ -78,7 +78,7 @@ def a_standby_console(ctx):
 def a_disconnect(ctx):
     """Disconnect from the device when device is reloading."""
     ctx.msg = "Device is reloading"
-    ctx.ctrl.disconnect()
+    ctx.device.disconnect()
     return True
 
 
