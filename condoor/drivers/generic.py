@@ -178,15 +178,8 @@ class Driver(object):
 
     def update_driver(self, prompt):
         """Update driver based on the prompt."""
-        logger.debug(prompt)
         # Do not update the driver if not target device
-        platform = pattern_manager.platform(prompt) if self.device.is_target else None
-        if platform:
-            logger.debug('{} -> {}'.format(self.platform, platform))
-            return platform
-        else:
-            logger.debug('No update: {}'.format(self.platform))
-            return self.platform
+        return pattern_manager.platform(prompt) if self.device.is_target else None
 
     def wait_for_string(self, expected_string, timeout=60):
         """Wait for string FSM."""

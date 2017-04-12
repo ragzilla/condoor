@@ -23,15 +23,4 @@ class Driver(IOSDriver):
 
     def update_driver(self, prompt):
         """Return driver name based on prompt analysis."""
-        logger.debug(prompt)
-        platform = pattern_manager.platform(prompt)
-        # to avoid the XE platform detection as IOS and XE and IOS prompts are the same
-        if platform == 'IOS':
-            platform = 'XE'
-
-        if platform:
-            logger.debug('{} -> {}'.format(self.platform, platform))
-            return platform
-        else:
-            logger.debug('No update: {}'.format(self.platform))
-            return self.platform
+        return pattern_manager.platform(prompt, ['XE'])

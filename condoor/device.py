@@ -289,9 +289,11 @@ class Device(object):
     @driver_name.setter
     def driver_name(self, driver_name):
         if self.driver is None or driver_name != self.driver.platform:
+            logger.debug('Driver change {} -> {}'.format(self.driver.platform, driver_name))
             self.driver = self.make_driver(driver_name)
-            logger.debug("{}".format(self.driver.platform))
             self.make_dynamic_prompt(self.prompt)
+        else:
+            logger.debug('Driver {}'.format(driver_name))
 
     def make_driver(self, driver_name='generic'):
         """Factory function to make driver."""

@@ -33,14 +33,7 @@ class Driver(Generic):
 
     def update_driver(self, prompt):
         """Return driver name based on prompt analysis."""
-        logger.debug(prompt)
-        platform = pattern_manager.platform(prompt, ['XR', 'QNX'])
-        if platform:
-            logger.debug('{} -> {}'.format(self.platform, platform))
-            return platform
-        else:
-            logger.debug('No update: {}'.format(self.platform))
-            return self.platform
+        return pattern_manager.platform(prompt, ['XR', 'QNX'])
 
     def reload(self, reload_timeout, save_config):
         """Reload the device."""
