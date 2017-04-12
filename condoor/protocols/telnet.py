@@ -125,7 +125,7 @@ class TelnetConsole(Telnet):
             (ESCAPE_CHAR, [0], 1, partial(a_send, "\r\n"), _C['esc_char_timeout']),
             (driver.press_return_re, [0, 1], 1, partial(a_send, "\r\n"), 10),
             (PASSWORD_OK, [0, 1], 1, partial(a_send, "\r\n"), 10),
-            (driver.standby_re, [0, 5], -1, ConnectionError("Standby console", self.hostname), 0),
+            (driver.standby_re, [0, 1, 5], -1, ConnectionError("Standby console", self.hostname), 0),
             (driver.username_re, [0, 1, 5, 6], -1, partial(a_save_last_pattern, self), 0),
             (driver.password_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
             (driver.more_re, [0, 5], 7, partial(a_send, "q"), 10),
