@@ -187,6 +187,13 @@ class Device(object):
         logger.debug("Disconnecting: {}".format(self))
         if self.connected:
             if self.protocol:
+                if self.is_console:
+                    while self.mode != 'global':
+                        try:
+                            self.send('exit', timeout=10)
+                        except CommandTimeoutError:
+                            break
+
                 self.protocol.disconnect(self.driver)
                 self.protocol = None
 
