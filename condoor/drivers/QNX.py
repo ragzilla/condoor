@@ -1,4 +1,4 @@
-"""This is a Wind River Linux driver implementation."""
+"""This is a QNX driver implementation."""
 
 import logging
 from condoor.drivers.generic import Driver as Generic
@@ -17,7 +17,7 @@ class Driver(Generic):
     }
 
     def __init__(self, device):
-        """Initialize the Wind River Linux driver object."""
+        """Initialize the QNX Linux driver object."""
         super(Driver, self).__init__(device)
 
     def get_version_text(self):
@@ -26,5 +26,5 @@ class Driver(Generic):
         return version_text
 
     def get_os_type(self, version_text):
-        """Return Windriver os type."""
+        """Return QNX os type."""
         return 'QNX'
