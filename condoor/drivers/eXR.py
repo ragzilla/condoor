@@ -115,34 +115,35 @@ class Driver(Generic):
         """Reload the device."""
         MAX_BOOT_TIME = 1800  # 30 minutes - TODO(klstanie): move to config
         RELOAD_PROMPT = re.compile(re.escape("Reload hardware module ? [no,yes]"))
+
         START_TO_BACKUP = re.compile("Status report.*START TO BACKUP")
+        BACKUP_IN_PROGRESS = re.compile("Status report.*BACKUP INPROGRESS")
+
         BACKUP_HAS_COMPLETED_SUCCESSFULLY = re.compile("Status report.*BACKUP HAS COMPLETED SUCCESSFULLY")
         DONE = re.compile(re.escape("[Done]"))
+
+        STAND_BY = re.compile("Please stand by while rebooting the system")
         CONSOLE = re.compile("ios con[0|1]/(?:RS?P)?[0-1]/CPU0 is now available")
         CONFIGURATION_COMPLETED = re.compile("SYSTEM CONFIGURATION COMPLETED")
         CONFIGURATION_IN_PROCESS = re.compile("SYSTEM CONFIGURATION IN PROCESS")
         BOOTING = re.compile("Booting IOS-XR 64 bit Boot previously installed image")
 
-        # events = [RELOAD_NA, DONE, PROCEED, CONFIGURATION_IN_PROCESS, self.rommon_re, self.press_return_re,
-        #           #   6               7                       8                     9      10        11
-        #           CONSOLE, CONFIGURATION_COMPLETED, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF, self.reload_cmd,
-        #           #    12                    13                     14
-        #           ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
-
-        #           1                  2              3                     4                          5     6
-        events = [self.reload_cmd, RELOAD_PROMPT, START_TO_BACKUP, BACKUP_HAS_COMPLETED_SUCCESSFULLY, DONE, BOOTING,
-                  #   7                   8               9                       10                 11
+        #           0                 1              2                         3                          4     5
+        events = [RELOAD_PROMPT, START_TO_BACKUP, BACKUP_IN_PROGRESS, BACKUP_HAS_COMPLETED_SUCCESSFULLY, DONE, BOOTING,
+                  #   6                  7               8                     9                    10
                   CONSOLE, self.press_return_re, CONFIGURATION_COMPLETED, CONFIGURATION_IN_PROCESS, EOF,
-                  #   12
-                  pexpect.TIMEOUT]
+                  #   11                12           13
+                  pexpect.TIMEOUT, self.rommon_re, STAND_BY]
 
         transitions = [
             # do I really need to clean the cmd
             (RELOAD_PROMPT, [0], 1, partial(a_send_line, "yes"), 30),
             (START_TO_BACKUP, [1], 2, a_message_callback, 60),
+            (BACKUP_IN_PROGRESS, [1, 2], 2, a_message_callback, 60),
             (BACKUP_HAS_COMPLETED_SUCCESSFULLY, [2], 3, a_message_callback, 10),
             (DONE, [3], 4, None, 600),
-            (self.rommon_re, [0, 4], 5, partial(a_send_boot, "boot"), 600),
+            (STAND_BY, [2, 3, 4], 5, a_message_callback, MAX_BOOT_TIME),
+            (self.rommon_re, [0, 4], 5, partial(a_send_boot, "boot"), MAX_BOOT_TIME),
             (BOOTING, [0, 4], 5, a_message_callback, MAX_BOOT_TIME),
             (CONSOLE, [0, 5], 6, None, 600),
             (self.press_return_re, [6], 7, partial(a_send, "\r"), 300),
@@ -151,23 +152,6 @@ class Driver(Generic):
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
             (pexpect.TIMEOUT, [5], -1, ConnectionError("Boot process took more than {}s".format(MAX_BOOT_TIME)), 0),
 
-            # (RELOAD_NA, [1], -1, a_reload_na, 0),
-            # (DONE, [1], 2, None, 120),
-            # (PROCEED, [2], 3, partial(a_send, "\r"), reload_timeout),
-            # (self.rommon_re, [0, 3], 4, partial(a_send_boot, "boot"), 600),
-            # (CANDIDATE_BOOT_IMAGE, [0, 3], 4, a_message_callback, 600),
-            # (CONSOLE, [0, 1, 3, 4], 5, None, 600),
-            # (self.press_return_re, [5], 6, partial(a_send, "\r"), 300),
-            # # configure root username and password the same as used for device connection.
-            # (RECONFIGURE_USERNAME_PROMPT, [6, 7], 8, None, 10),
-            # (ROOT_USERNAME_PROMPT, [8], 9, partial(a_send_username, self.device.node_info.username), 1),
-            # (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
-            # (CONFIGURATION_IN_PROCESS, [6, 9], 7, None, 180),
-            # (CONFIGURATION_COMPLETED, [7], -1, a_reconnect, 0),
-            # (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),
-            # (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
-            # (TIMEOUT, [6], 7, partial(a_send, "\r"), 180),
-            # (TIMEOUT, [7], -1, ConnectionAuthenticationError("Unable to reconnect after reloading"), 0),
         ]
 
         fsm = FSM("RELOAD", self.device, events, transitions, timeout=600)
