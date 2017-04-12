@@ -37,6 +37,7 @@ generic:
     - jumphost
     - Calvados
     - Windriver
+    - QNX
 
   # prompts for platforms detection
   prompt_detection:
@@ -46,6 +47,7 @@ generic:
     - Calvados
     - Windriver
     - IOS
+    - QNX
     - NX-OS
 
   press_return: 'Press RETURN to get started\.'
@@ -88,6 +90,7 @@ XR:
   prompt_default: 'RP/[0-3]/RS?P[0-1]/CPU[0-1]:ios#'
   rommon: 'rommon \d+ >'
   xml: 'XML> '
+  qnx: '# '
   username: '[Uu]sername: '
   password: '[Pp]assword: '
   standby: 'This \(D\)RP Node is not ready or active for login /configuration'
@@ -196,3 +199,11 @@ Windriver:
   lc: '\[host:~\]\$'
   syntax_error: 'command not found'
   version: 'Wind River Linux (\d+\.\d+\.\d+\.\d+)'
+
+QNX:
+  prompt: '^(?P<hostname>)# '
+  prompt_dynamic: '{hostname}# '
+  prompt_default: '# '
+  xr: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(.*?)(\([^()]*\))?#'
+  syntax_error: 'ksh: .* not found'
+  version: '^([a-zA-Z0-9].*)'

@@ -98,9 +98,11 @@ class PatternManager(object):
         description = patterns.get(key, None)
         return description
 
-    def platform(self, with_prompt):
+    def platform(self, with_prompt, platforms=None):
         """Return the platform name based on the prompt matching."""
-        platforms = self._dict['generic']['prompt_detection']
+        if platforms is None:
+            platforms = self._dict['generic']['prompt_detection']
+
         for platform in platforms:
             pattern = self.pattern(platform, 'prompt')
             result = re.search(pattern, with_prompt)

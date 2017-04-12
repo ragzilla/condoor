@@ -4,7 +4,7 @@ from functools import partial
 import re
 import logging
 from condoor.drivers.generic import Driver as Generic
-from condoor import TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
+from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
     a_message_callback, a_return_and_reconnect
@@ -18,7 +18,7 @@ class Driver(Generic):
     platform = 'XR'
     inventory_cmd = 'admin show inventory chassis'
     users_cmd = 'show users'
-    target_prompt_components = ['prompt_dynamic', 'prompt_default', 'rommon', 'xml']
+    target_prompt_components = ['prompt_dynamic', 'prompt_default', 'rommon', 'xml', 'qnx']
     prepare_terminal_session = ['terminal exec prompt no-timestamp', 'terminal len 0', 'terminal width 0']
     reload_cmd = 'admin reload location all'
     families = {
@@ -30,6 +30,17 @@ class Driver(Generic):
     def __init__(self, device):
         """Initialize the IOS XR Classic driver object."""
         super(Driver, self).__init__(device)
+
+    def update_driver(self, prompt):
+        """Return driver name based on prompt analysis."""
+        logger.debug(prompt)
+        platform = pattern_manager.platform(prompt, ['XR', 'QNX'])
+        if platform:
+            logger.debug('{} -> {}'.format(self.platform, platform))
+            return platform
+        else:
+            logger.debug('No update: {}'.format(self.platform))
+            return self.platform
 
     def reload(self, reload_timeout, save_config):
         """Reload the device."""
