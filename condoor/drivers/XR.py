@@ -7,7 +7,7 @@ from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
-    a_message_callback, a_return_and_reconnect
+    a_message_callback, a_return_and_reconnect, a_not_committed
 
 logger = logging.getLogger(__name__)
 
@@ -53,17 +53,20 @@ class Driver(Generic):
         # Candidate Boot Image num 0 is disk0:asr9k-os-mbi-6.1.1/0x100305/mbiasr9k-rsp3.vm
         # Candidate Boot Image num 1 is disk0:asr9k-os-mbi-5.3.4/0x100305/mbiasr9k-rsp3.vm
         CANDIDATE_BOOT_IMAGE = "Candidate Boot Image num 0 is .*vm"
-
+        NOT_COMMITTED = re.compile(re.escape("Some active software packages are not yet committed. Proceed?[confirm]"))
         RELOAD_NA = re.compile("Reload to the ROM monitor disallowed from a telnet line")
         #           0          1      2                3                   4                  5
         events = [RELOAD_NA, DONE, PROCEED, CONFIGURATION_IN_PROCESS, self.rommon_re, self.press_return_re,
                   #   6               7                   8                     9                   10       11
                   CONSOLE, CONFIGURATION_COMPLETED, self.username_re, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF,
                   #    12                    13                     14                15
-                  self.reload_cmd, ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
+                  self.reload_cmd, ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE,
+                  # 16
+                  NOT_COMMITTED]
 
         transitions = [
             (RELOAD_NA, [0], -1, a_reload_na, 0),
+            (NOT_COMMITTED, [0], -1, a_not_committed, 0),
             (DONE, [0], 2, None, 120),
             (PROCEED, [2], 3, partial(a_send, "\r"), reload_timeout),
             # this needs to be verified

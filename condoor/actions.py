@@ -92,6 +92,15 @@ def a_reload_na(ctx):
 
 
 @action
+def a_not_committed(ctx):
+    """Provide the message that current software is not committed and reload is not possible."""
+    ctx.ctrl.sendline('no')
+    ctx.msg = "Some active software packages are not yet committed. Reload may cause software rollback."
+    ctx.failed = True
+    return False
+
+
+@action
 def a_connection_closed(ctx):
     """Provide message when connection is closed by remote host."""
     ctx.msg = "Device disconnected"
