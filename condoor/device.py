@@ -295,6 +295,9 @@ class Device(object):
 
     @driver_name.setter
     def driver_name(self, driver_name):
+        if driver_name is None:
+            logger.error("New driver cannot be None")
+            return
         if self.driver is None or driver_name != self.driver.platform:
             logger.debug('Driver change {} -> {}'.format(self.driver.platform, driver_name))
             self.driver = self.make_driver(driver_name)
@@ -402,9 +405,13 @@ class Device(object):
 
     def update_driver(self, prompt):
         """Update driver based on new prompt."""
-        logger.debug("{}: New prompt '{}'".format(self.driver.platform, prompt))
+        logger.debug("({}): Prompt: '{}'".format(self.driver.platform, prompt))
         self.prompt = prompt
-        self.driver_name = self.driver.update_driver(prompt)
+        driver_name = self.driver.update_driver(prompt)
+        if driver_name is None:
+            logger.error("New driver not detected. Using existing {} driver.".format(self.driver.platform))
+            return
+        self.driver_name = driver_name
 
     def prepare_terminal_session(self):
         """Send commands to prepare terminal session configuration."""
