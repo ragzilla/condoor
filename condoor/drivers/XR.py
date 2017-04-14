@@ -57,11 +57,11 @@ class Driver(Generic):
         RELOAD_NA = re.compile("Reload to the ROM monitor disallowed from a telnet line")
         #           0          1      2                3                   4                  5
         events = [RELOAD_NA, DONE, PROCEED, CONFIGURATION_IN_PROCESS, self.rommon_re, self.press_return_re,
-                  #   6               7                   8                     9                   10       11
-                  CONSOLE, CONFIGURATION_COMPLETED, self.username_re, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF,
-                  #    12                    13                     14                15
-                  self.reload_cmd, ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE,
-                  # 16
+                  #   6               7                   8                           9
+                  CONSOLE, CONFIGURATION_COMPLETED, RECONFIGURE_USERNAME_PROMPT, ROOT_USERNAME_PROMPT,
+                  #    10                    11              12     13          14           15
+                  ROOT_PASSWORD_PROMPT, self.username_re, TIMEOUT, EOF, self.reload_cmd, CANDIDATE_BOOT_IMAGE,
+                  #   16
                   NOT_COMMITTED]
 
         transitions = [
@@ -80,7 +80,7 @@ class Driver(Generic):
             (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
             (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 180),
             (CONFIGURATION_COMPLETED, [10], -1, a_reconnect, 0),
-            (self.username_re, [7], -1, a_return_and_reconnect, 0),
+            (self.username_re, [7, 9], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
             (TIMEOUT, [6], 7, partial(a_send, "\r"), 180),
