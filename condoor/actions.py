@@ -96,6 +96,7 @@ def a_not_committed(ctx):
     """Provide the message that current software is not committed and reload is not possible."""
     ctx.ctrl.sendline('n')
     ctx.msg = "Some active software packages are not yet committed. Reload may cause software rollback."
+    ctx.device.chain.connection.emit_message(ctx.msg, log_level=logging.ERROR)
     ctx.failed = True
     return False
 
