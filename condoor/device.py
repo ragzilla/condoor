@@ -270,7 +270,8 @@ class Device(object):
         except CommandSyntaxError as e:  # pylint: disable=invalid-name
             logger.error("{}: '{}'".format(e.message, cmd))
             e.command = cmd
-            raise e
+            # TODO: Verify why lint raises an issue
+            raise e  # pylint: disable=raising-bad-type
 
         except (CommandTimeoutError, pexpect.TIMEOUT):
             logger.error("Command timeout: '{}'".format(cmd))
