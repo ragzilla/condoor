@@ -465,7 +465,7 @@ class Device(object):
         """Reload device."""
         if not no_reload_cmd:
             self.ctrl.send_command(self.driver.reload_cmd)
-        self.driver.reload(reload_timeout, save_config)
+        return self.driver.reload(reload_timeout, save_config)
 
     def run_fsm(self, name, command, events, transitions, timeout, max_transitions=20):
         """Wrap the FSM code."""

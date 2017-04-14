@@ -372,13 +372,20 @@ class Connection(object):
         self._chain.target_device.enable(enable_password)
 
     def reload(self, reload_timeout=300, save_config=True, no_reload_cmd=False):
-        """Reload the device and wait for device to boot up."""
+        """Reload the device and wait for device to boot up.
+
+        Returns False if reload was not successful.
+        """
         begin = time.time()
         self._chain.target_device.clear_info()
-        self._chain.target_device.reload(reload_timeout, save_config, no_reload_cmd)
-        self._write_cache()
-        elapsed = time.time() - begin
-        self.emit_message("Target device reloaded in {:.0f}s.".format(elapsed), log_level=logging.INFO)
+        result = self._chain.target_device.reload(reload_timeout, save_config, no_reload_cmd)
+        if result:
+            self._write_cache()
+            elapsed = time.time() - begin
+            self.emit_message("Target device reloaded in {:.0f}s.".format(elapsed), log_level=logging.INFO)
+        else:
+            self.emit_message("Target device not reloaded.", log_level=logging.ERROR)
+        return result
 
     def run_fsm(self, name, command, events, transitions, timeout, max_transitions=20):
         """Instantiate and run the Finite State Machine for the current device connection.
