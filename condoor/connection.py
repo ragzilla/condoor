@@ -77,6 +77,9 @@ class Connection(object):
         self._discovered = False
         self._last_chain_index = 0
         self._msg_callback = None
+        self._error_msg_callback = None
+        self._warning_msg_callback = None
+        self._info_msg_callback = None
 
         self.log_session = log_session
         top_logger = logging.getLogger("condoor")
@@ -465,9 +468,24 @@ class Connection(object):
 
     def emit_message(self, message, log_level):
         """Call the msg callback function with the message."""
+        logger.log(log_level, message)
         if self._msg_callback:
             self._msg_callback(message)
-        logger.log(log_level, message)
+
+        if log_level == logging.ERROR:
+            if self._error_msg_callback:
+                self._error_msg_callback(message)
+            return
+
+        if log_level == logging.WARNING:
+            if self._warning_msg_callback:
+                self._warning_msg_callback(message)
+            return
+
+        if log_level == logging.INFO:
+            if self._info_msg_callback:
+                self._info_msg_callback(message)
+            return
 
     @property
     def msg_callback(self):
@@ -481,6 +499,45 @@ class Connection(object):
             self._msg_callback = callback
         else:
             self._msg_callback = None
+
+    @property
+    def error_msg_callback(self):
+        """Return the error message callback."""
+        return self._error_msg_callback
+
+    @error_msg_callback.setter
+    def error_msg_callback(self, callback):
+        """Set the error message callback."""
+        if callable(callback):
+            self._error_msg_callback = callback
+        else:
+            self._error_msg_callback = None
+
+    @property
+    def warning_msg_callback(self):
+        """Return the warning message callback."""
+        return self._warning_msg_callback
+
+    @warning_msg_callback.setter
+    def warning_msg_callback(self, callback):
+        """Set the warning message callback."""
+        if callable(callback):
+            self._warning_msg_callback = callback
+        else:
+            self._warning_msg_callback = None
+
+    @property
+    def info_msg_callback(self):
+        """Return the info message callback."""
+        return self._info_msg_callback
+
+    @info_msg_callback.setter
+    def info_msg_callback(self, callback):
+        """Set the info message callback."""
+        if callable(callback):
+            self._info_msg_callback = callback
+        else:
+            self._info_msg_callback = None
 
     @property
     def _chain(self):
