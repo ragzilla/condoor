@@ -94,7 +94,7 @@ def a_reload_na(ctx):
 @action
 def a_not_committed(ctx):
     """Provide the message that current software is not committed and reload is not possible."""
-    ctx.ctrl.sendline('no')
+    ctx.ctrl.sendline('n')
     ctx.msg = "Some active software packages are not yet committed. Reload may cause software rollback."
     ctx.failed = True
     return False
