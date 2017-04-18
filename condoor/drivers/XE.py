@@ -64,4 +64,4 @@ class Driver(IOSDriver):
             (EOF, [0, 1, 2], -1, a_disconnect, 0)
         ]
         fsm = FSM("IOS-RELOAD", self.device, events, transitions, timeout=10, max_transitions=5)
-        fsm.run()
+        return fsm.run()
