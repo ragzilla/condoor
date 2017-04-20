@@ -303,7 +303,7 @@ class Connection(object):
                     index = chain.get_device_index_based_on_prompt(prompt)
                     chain.tail_disconnect(index)
 
-                self.emit_message("Connection error: {}".format(e), log_level=logging.ERROR)
+                self.emit_message("Connection error: {}".format(e), log_level=logging.INFO)
                 chain_indices.rotate(-1)
                 excpt = e
             finally:
