@@ -42,13 +42,16 @@ class Driver(IOSDriver):
         SAVE_CONFIG = re.compile(re.escape("System configuration has been modified. Save? [yes/no]: "))
         PROCEED = re.compile(re.escape("Proceed with reload? [confirm]"))
         IMAGE = re.compile("Passing control to the main image")
+        BOOTSTRAP = re.compile("System Bootstrap")
         LOCATED = re.compile("Located .*")
         RETURN = re.compile(re.escape("Press RETURN to get started!"))
 
         response = "yes" if save_config else "no"
 
-        #              0          1       2       3         4                   5              6     7       8
-        events = [SAVE_CONFIG, PROCEED, LOCATED, RETURN, self.username_re, self.password_re, IMAGE, TIMEOUT, EOF]
+        #              0          1       2       3         4
+        events = [SAVE_CONFIG, PROCEED, LOCATED, RETURN, self.username_re,
+                  self.password_re, BOOTSTRAP, IMAGE, TIMEOUT, EOF]
+        #              5              6          7       8      9
 
         transitions = [
             (SAVE_CONFIG, [0], 1, partial(a_send_line, response), 60),
@@ -56,12 +59,13 @@ class Driver(IOSDriver):
             (LOCATED, [2], 2, a_message_callback, reload_timeout),
             # if timeout try to send the reload command again
             (TIMEOUT, [0], 0, partial(a_send_line, self.reload_cmd), 10),
+            (BOOTSTRAP, [2], -1, a_disconnect, reload_timeout),
             (IMAGE, [2], 3, a_message_callback, reload_timeout),
             (self.username_re, [3], -1, a_return_and_reconnect, 0),
             (self.password_re, [3], -1, a_return_and_reconnect, 0),
             (RETURN, [3], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [2], -1, a_disconnect, 0),
-            (EOF, [0, 1, 2], -1, a_disconnect, 0)
+            (EOF, [0, 1, 2, 3], -1, a_disconnect, 0)
         ]
-        fsm = FSM("IOS-RELOAD", self.device, events, transitions, timeout=10, max_transitions=5)
+        fsm = FSM("IOS-RELOAD", self.device, events, transitions, timeout=10)
         return fsm.run()
