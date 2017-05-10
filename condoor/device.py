@@ -78,7 +78,7 @@ class Device(object):
             'mode': self.mode,
             'is_console': self.is_console,
             'is_target': self.is_target,
-            'prompt': self.driver.base_prompt(self.prompt),
+            # 'prompt': self.driver.base_prompt(self.prompt),
             'hostname': self.hostname,
         }
 
@@ -187,6 +187,13 @@ class Device(object):
         logger.debug("Disconnecting: {}".format(self))
         if self.connected:
             if self.protocol:
+                if self.is_console:
+                    while self.mode != 'global':
+                        try:
+                            self.send('exit', timeout=10)
+                        except CommandTimeoutError:
+                            break
+
                 self.protocol.disconnect(self.driver)
                 self.protocol = None
 
@@ -263,7 +270,8 @@ class Device(object):
         except CommandSyntaxError as e:  # pylint: disable=invalid-name
             logger.error("{}: '{}'".format(e.message, cmd))
             e.command = cmd
-            raise e
+            # TODO: Verify why lint raises an issue
+            raise e  # pylint: disable=raising-bad-type
 
         except (CommandTimeoutError, pexpect.TIMEOUT):
             logger.error("Command timeout: '{}'".format(cmd))
@@ -288,10 +296,15 @@ class Device(object):
 
     @driver_name.setter
     def driver_name(self, driver_name):
+        if driver_name is None:
+            logger.error("New driver cannot be None")
+            return
         if self.driver is None or driver_name != self.driver.platform:
+            logger.debug('Driver change {} -> {}'.format(self.driver.platform, driver_name))
             self.driver = self.make_driver(driver_name)
-            logger.debug("{}".format(self.driver.platform))
             self.make_dynamic_prompt(self.prompt)
+        else:
+            logger.debug('Driver {}'.format(driver_name))
 
     def make_driver(self, driver_name='generic'):
         """Factory function to make driver."""
@@ -393,9 +406,14 @@ class Device(object):
 
     def update_driver(self, prompt):
         """Update driver based on new prompt."""
-        logger.debug("{}: New prompt '{}'".format(self.driver.platform, prompt))
+        prompt = prompt.lstrip()
+        logger.debug("({}): Prompt: '{}'".format(self.driver.platform, prompt))
         self.prompt = prompt
-        self.driver_name = self.driver.update_driver(prompt)
+        driver_name = self.driver.update_driver(prompt)
+        if driver_name is None:
+            logger.error("New driver not detected. Using existing {} driver.".format(self.driver.platform))
+            return
+        self.driver_name = driver_name
 
     def prepare_terminal_session(self):
         """Send commands to prepare terminal session configuration."""
@@ -448,7 +466,7 @@ class Device(object):
         """Reload device."""
         if not no_reload_cmd:
             self.ctrl.send_command(self.driver.reload_cmd)
-        self.driver.reload(reload_timeout, save_config)
+        return self.driver.reload(reload_timeout, save_config)
 
     def run_fsm(self, name, command, events, transitions, timeout, max_transitions=20):
         """Wrap the FSM code."""

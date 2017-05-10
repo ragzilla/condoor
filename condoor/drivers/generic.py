@@ -178,15 +178,8 @@ class Driver(object):
 
     def update_driver(self, prompt):
         """Update driver based on the prompt."""
-        logger.debug(prompt)
         # Do not update the driver if not target device
-        platform = pattern_manager.platform(prompt) if self.device.is_target else None
-        if platform:
-            logger.debug('{} -> {}'.format(self.platform, platform))
-            return platform
-        else:
-            logger.debug('No update: {}'.format(self.platform))
-            return self.platform
+        return pattern_manager.platform(prompt) if self.device.is_target else None
 
     def wait_for_string(self, expected_string, timeout=60):
         """Wait for string FSM."""
@@ -294,17 +287,19 @@ class Driver(object):
 
     def make_dynamic_prompt(self, prompt):
         """Extend prompt with flexible mode handling regexp."""
-        patterns = [pattern_manager.pattern(
+        patterns = ["[\r\n]" + pattern_manager.pattern(
             self.platform, pattern_name, compiled=False) for pattern_name in self.target_prompt_components]
 
-        patterns_re = "|".join(patterns).format(prompt=re.escape(prompt[:-1]))
+        hostname = self.update_hostname(prompt)
+        # patterns_re = "|".join(patterns).format(prompt=re.escape(prompt[:-1]))
+        patterns_re = "|".join(patterns).format(hostname=re.escape(hostname))
 
         try:
-            prompt_re = re.compile(patterns_re)
+            prompt_re = re.compile(patterns_re, re.MULTILINE)
         except re.error as e:  # pylint: disable=invalid-name
             raise RuntimeError("Pattern compile error: {} ({}:{})".format(e.message, self.platform, patterns_re))
 
-        logger.debug("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, prompt_re.pattern))
+        logger.debug("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, repr(prompt_re.pattern)))
         return prompt_re
 
     def update_config_mode(self, prompt):  # pylint: disable=no-self-use
@@ -320,7 +315,7 @@ class Driver(object):
         return mode
 
     def update_hostname(self, prompt):
-        """Update the hostname based on the prompt analusis."""
+        """Update the hostname based on the prompt analysis."""
         result = re.search(self.prompt_re, prompt)
         if result:
             hostname = result.group('hostname')

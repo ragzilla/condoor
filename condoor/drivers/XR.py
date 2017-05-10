@@ -4,10 +4,10 @@ from functools import partial
 import re
 import logging
 from condoor.drivers.generic import Driver as Generic
-from condoor import TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
+from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
-    a_message_callback, a_return_and_reconnect
+    a_message_callback, a_return_and_reconnect, a_not_committed
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class Driver(Generic):
     platform = 'XR'
     inventory_cmd = 'admin show inventory chassis'
     users_cmd = 'show users'
-    target_prompt_components = ['prompt_dynamic', 'prompt_default', 'rommon', 'xml']
+    target_prompt_components = ['prompt_dynamic', 'prompt_default', 'rommon', 'xml', 'qnx']
     prepare_terminal_session = ['terminal exec prompt no-timestamp', 'terminal len 0', 'terminal width 0']
     reload_cmd = 'admin reload location all'
     families = {
@@ -30,6 +30,10 @@ class Driver(Generic):
     def __init__(self, device):
         """Initialize the IOS XR Classic driver object."""
         super(Driver, self).__init__(device)
+
+    def update_driver(self, prompt):
+        """Return driver name based on prompt analysis."""
+        return pattern_manager.platform(prompt, ['XR', 'QNX'])
 
     def reload(self, reload_timeout, save_config):
         """Reload the device."""
@@ -49,17 +53,20 @@ class Driver(Generic):
         # Candidate Boot Image num 0 is disk0:asr9k-os-mbi-6.1.1/0x100305/mbiasr9k-rsp3.vm
         # Candidate Boot Image num 1 is disk0:asr9k-os-mbi-5.3.4/0x100305/mbiasr9k-rsp3.vm
         CANDIDATE_BOOT_IMAGE = "Candidate Boot Image num 0 is .*vm"
-
+        NOT_COMMITTED = re.compile(re.escape("Some active software packages are not yet committed. Proceed?[confirm]"))
         RELOAD_NA = re.compile("Reload to the ROM monitor disallowed from a telnet line")
         #           0          1      2                3                   4                  5
         events = [RELOAD_NA, DONE, PROCEED, CONFIGURATION_IN_PROCESS, self.rommon_re, self.press_return_re,
-                  #   6               7                   8                     9                   10       11
-                  CONSOLE, CONFIGURATION_COMPLETED, self.username_re, RECONFIGURE_USERNAME_PROMPT, TIMEOUT, EOF,
-                  #    12                    13                     14                15
-                  self.reload_cmd, ROOT_USERNAME_PROMPT, ROOT_PASSWORD_PROMPT, CANDIDATE_BOOT_IMAGE]
+                  #   6               7                   8                           9
+                  CONSOLE, CONFIGURATION_COMPLETED, RECONFIGURE_USERNAME_PROMPT, ROOT_USERNAME_PROMPT,
+                  #    10                    11              12     13          14           15
+                  ROOT_PASSWORD_PROMPT, self.username_re, TIMEOUT, EOF, self.reload_cmd, CANDIDATE_BOOT_IMAGE,
+                  #   16
+                  NOT_COMMITTED]
 
         transitions = [
             (RELOAD_NA, [0], -1, a_reload_na, 0),
+            (NOT_COMMITTED, [0], -1, a_not_committed, 0),
             (DONE, [0], 2, None, 120),
             (PROCEED, [2], 3, partial(a_send, "\r"), reload_timeout),
             # this needs to be verified
@@ -73,7 +80,7 @@ class Driver(Generic):
             (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
             (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 180),
             (CONFIGURATION_COMPLETED, [10], -1, a_reconnect, 0),
-            (self.username_re, [7], -1, a_return_and_reconnect, 0),
+            (self.username_re, [7, 9], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
             (TIMEOUT, [6], 7, partial(a_send, "\r"), 180),

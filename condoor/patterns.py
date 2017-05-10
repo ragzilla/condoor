@@ -87,10 +87,7 @@ class PatternManager(object):
         if pattern is None:
             raise KeyError("Patterns database corrupted. Platform: {}, Key: {}".format(platform, key))
 
-        if compiled:
-            return re.compile(pattern)
-        else:
-            return pattern
+        return pattern
 
     def description(self, platform, key):
         """Return the patter description."""
@@ -98,9 +95,11 @@ class PatternManager(object):
         description = patterns.get(key, None)
         return description
 
-    def platform(self, with_prompt):
+    def platform(self, with_prompt, platforms=None):
         """Return the platform name based on the prompt matching."""
-        platforms = self._dict['generic']['prompt_detection']
+        if platforms is None:
+            platforms = self._dict['generic']['prompt_detection']
+
         for platform in platforms:
             pattern = self.pattern(platform, 'prompt')
             result = re.search(pattern, with_prompt)
