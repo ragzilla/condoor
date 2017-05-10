@@ -55,7 +55,7 @@ class Controller(object):
                     command,
                     maxread=65536,
                     searchwindowsize=4000,
-                    env={"TERM": "VT100"},  # to avoid color control characters
+                    env={"TERM": "vt100"},  # to avoid color control characters
                     echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
