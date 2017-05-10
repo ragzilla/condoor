@@ -92,9 +92,9 @@ def pattern_to_str(pattern):
     :return: str: pattern sttring
     """
     if isinstance(pattern, str):
-        return pattern
+        return repr(pattern)
     else:
-        return pattern.pattern if pattern else None
+        return repr(pattern.pattern) if pattern else None
 
 
 def levenshtein_distance(str_a, str_b):

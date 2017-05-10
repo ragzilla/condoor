@@ -287,7 +287,7 @@ class Driver(object):
 
     def make_dynamic_prompt(self, prompt):
         """Extend prompt with flexible mode handling regexp."""
-        patterns = [pattern_manager.pattern(
+        patterns = ["[\r\n]" + pattern_manager.pattern(
             self.platform, pattern_name, compiled=False) for pattern_name in self.target_prompt_components]
 
         hostname = self.update_hostname(prompt)
@@ -295,11 +295,11 @@ class Driver(object):
         patterns_re = "|".join(patterns).format(hostname=re.escape(hostname))
 
         try:
-            prompt_re = re.compile(patterns_re)
+            prompt_re = re.compile(patterns_re, re.MULTILINE)
         except re.error as e:  # pylint: disable=invalid-name
             raise RuntimeError("Pattern compile error: {} ({}:{})".format(e.message, self.platform, patterns_re))
 
-        logger.debug("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, prompt_re.pattern))
+        logger.debug("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, repr(prompt_re.pattern)))
         return prompt_re
 
     def update_config_mode(self, prompt):  # pylint: disable=no-self-use
@@ -315,7 +315,7 @@ class Driver(object):
         return mode
 
     def update_hostname(self, prompt):
-        """Update the hostname based on the prompt analusis."""
+        """Update the hostname based on the prompt analysis."""
         result = re.search(self.prompt_re, prompt)
         if result:
             hostname = result.group('hostname')

@@ -2,7 +2,7 @@
 generic:
   #prompt: '(?P<hostname>[\w\-]+)[#>]'
   # standby to hack the nexus case when standby is a part of prompt
-  prompt: '(?P<hostname>.*?(?<!\(standby\)))[#>\$]'
+  prompt: '(?P<hostname>.*?(?<!\(standby\)))(?<!unknown)[#>\$]'
   # prompt: '(?P<hostname>.*?)[#>\$]'
   # prompt_dynamic: '{prompt}[#>]'
   prompt_dynamic: '{hostname}[#>]'
@@ -134,7 +134,7 @@ eXR:
     description: 'Command syntax error'
 
 IOS:
-  prompt: '^(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
+  prompt: '(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
   # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
   prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
@@ -150,7 +150,7 @@ IOS:
     description: 'Command syntax error'
 
 XE:
-  prompt: '^(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
+  prompt: '(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
   # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
   prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
@@ -163,7 +163,7 @@ XE:
     description: 'Command syntax error'
 
 NX-OS:
-  prompt: '^(?P<hostname>.*?)(\([^()]*\))?#'
+  prompt: '(?P<hostname>.*?)(\([^()]*\))?#'
   # prompt_dynamic: '{prompt}(\([^()]*\))?#'
   prompt_dynamic: '{hostname}(\([^()]*\))?#'
   prompt_default: 'switch#'
@@ -178,7 +178,7 @@ NX-OS:
   console: 'tty'
 
 Calvados:
-  prompt: '^sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'
+  prompt: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'
   # prompt_dynamic: '{prompt}(\([^()]*\))?#'
   prompt_dynamic: '{hostname}(\([^()]*\))?#'
   prompt_default: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]#'
@@ -191,7 +191,7 @@ Calvados:
   syntax_error: 'syntax error: expecting'
 
 Windriver:
-  prompt: '^\[(?P<hostname>sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]):(.*)\]\$'
+  prompt: '\[(?P<hostname>sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]):(.*)\]\$'
   # prompt_dynamic: '{prompt}\$'
   prompt_dynamic: '{hostname}\$'
   prompt_default: '\[(?P<hostname>^sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]):(.*)\]\$'
@@ -201,7 +201,7 @@ Windriver:
   version: 'Wind River Linux (\d+\.\d+\.\d+\.\d+)'
 
 QNX:
-  prompt: '^(?P<hostname>)# '
+  prompt: '(?P<hostname>)# '
   prompt_dynamic: '{hostname}# '
   prompt_default: '# '
   xr: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(.*?)(\([^()]*\))?#'

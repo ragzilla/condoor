@@ -43,7 +43,7 @@ class Driver(Generic):
 
     def make_dynamic_prompt(self, prompt):
         """Extend prompt with flexible mode handling regexp."""
-        patterns = [pattern_manager.pattern(
+        patterns = ["[\r\n]" + pattern_manager.pattern(
             self.platform, pattern_name, compiled=False) for pattern_name in self.target_prompt_components]
 
         patterns_re = "|".join(patterns).format(hostname=re.escape(prompt))
@@ -53,5 +53,5 @@ class Driver(Generic):
         except re.error as e:  # pylint: disable=invalid-name
             raise RuntimeError("Pattern compile error: {} ({}:{})".format(e.message, self.platform, patterns_re))
 
-        logger.debug("Dynamic prompt: '{}'".format(prompt_re.pattern))
+        logger.debug("Dynamic prompt: '{}'".format(repr(prompt_re.pattern)))
         return prompt_re

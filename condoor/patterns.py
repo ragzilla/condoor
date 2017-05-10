@@ -87,10 +87,7 @@ class PatternManager(object):
         if pattern is None:
             raise KeyError("Patterns database corrupted. Platform: {}, Key: {}".format(platform, key))
 
-        if compiled:
-            return re.compile(pattern)
-        else:
-            return pattern
+        return pattern
 
     def description(self, platform, key):
         """Return the patter description."""

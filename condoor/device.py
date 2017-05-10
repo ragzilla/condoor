@@ -406,6 +406,7 @@ class Device(object):
 
     def update_driver(self, prompt):
         """Update driver based on new prompt."""
+        prompt = prompt.lstrip()
         logger.debug("({}): Prompt: '{}'".format(self.driver.platform, prompt))
         self.prompt = prompt
         driver_name = self.driver.update_driver(prompt)
