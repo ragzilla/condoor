@@ -80,8 +80,12 @@ class Controller(object):
         """Send command."""
         try:
             if password:
-                if not self.waitnoecho(10):  # pylint: disable=no-member
-                    logger.debug("Password ECHO OFF not received within 10s")
+                timeout = 10
+                logger.debug("Waiting for ECHO OFF")
+                if self.waitnoecho(timeout):  # pylint: disable=no-member
+                    logger.debug("Password ECHO OFF received")
+                else:
+                    logger.debug("Password ECHO OFF not received within {}s".format(timeout))
                 self.sendline(cmd)  # pylint: disable=no-member
             else:
                 self.send(cmd)  # pylint: disable=no-member
