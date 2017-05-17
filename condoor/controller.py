@@ -61,7 +61,7 @@ class Controller(object):
                 self._session.delaybeforesend = 0.3
                 rows, cols = self._session.getwinsize()
                 if cols < 160:
-                    self._session.setwinsize(1024, 160)
+                    self._session.setwinsize(512, 160)
                     nrows, ncols = self._session.getwinsize()
                     logger.debug("Terminal window size changed from "
                                  "{}x{} to {}x{}".format(rows, cols, nrows, ncols))
@@ -80,8 +80,12 @@ class Controller(object):
         """Send command."""
         try:
             if password:
-                if not self.waitnoecho(10):  # pylint: disable=no-member
-                    logger.debug("Password ECHO OFF not received within 10s")
+                timeout = 10
+                logger.debug("Waiting for ECHO OFF")
+                if self.waitnoecho(timeout):  # pylint: disable=no-member
+                    logger.debug("Password ECHO OFF received")
+                else:
+                    logger.debug("Password ECHO OFF not received within {}s".format(timeout))
                 self.sendline(cmd)  # pylint: disable=no-member
             else:
                 self.send(cmd)  # pylint: disable=no-member
