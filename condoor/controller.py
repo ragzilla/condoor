@@ -61,7 +61,7 @@ class Controller(object):
                 self._session.delaybeforesend = 0.3
                 rows, cols = self._session.getwinsize()
                 if cols < 160:
-                    self._session.setwinsize(1024, 160)
+                    self._session.setwinsize(512, 160)
                     nrows, ncols = self._session.getwinsize()
                     logger.debug("Terminal window size changed from "
                                  "{}x{} to {}x{}".format(rows, cols, nrows, ncols))
