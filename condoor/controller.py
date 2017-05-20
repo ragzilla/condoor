@@ -59,6 +59,7 @@ class Controller(object):
                     echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
+                logger.debug("Child process FD: {}".format(self._session.child_fd))
                 rows, cols = self._session.getwinsize()
                 if cols < 160:
                     self._session.setwinsize(512, 160)
