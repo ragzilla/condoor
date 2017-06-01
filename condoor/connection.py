@@ -105,9 +105,28 @@ class Connection(object):
 
     def __del__(self):
         """Clean up the object."""
+        self.finalize()
+
+    def finalize(self):
+        """Clean up the object.
+
+        After calling this method the object can't be used anymore.
+        This will be reworked when changing the logging model.
+        """
         if self._handler:
             top_logger = logging.getLogger("condoor")
             top_logger.removeHandler(self._handler)
+            self._handler.close()
+            self._handler = None
+
+        if self.session_fd:
+            self.session_fd.close()
+            self.session_fd = None
+
+        self._msg_callback = None
+        self._error_msg_callback = None
+        self._warning_msg_callback = None
+        self._info_msg_callback = None
 
     def _make_session_fd(self, log_dir):
         session_fd = None
