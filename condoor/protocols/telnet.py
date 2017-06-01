@@ -67,8 +67,9 @@ class Telnet(Protocol):
         ]
 
         logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        # setting max_transitions to large number to swallow prompt like strings from prompt
         fsm = FSM("TELNET-CONNECT", self.device, events, transitions, timeout=_C['connect_timeout'],
-                  init_pattern=self.last_pattern)
+                  init_pattern=self.last_pattern, max_transitions=100)
         return fsm.run()
 
     def authenticate(self, driver):
