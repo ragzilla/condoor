@@ -1,12 +1,13 @@
 """This is IOS XRv driver implementation."""
 
 import logging
-from condoor.drivers.XR import Driver as XR
+from condoor.drivers.XR import Driver as eXR
+from condoor import pattern_manager
 
 logger = logging.getLogger(__name__)
 
 
-class Driver(XR):
+class Driver(eXR):
     """This is a Driver class implementation for IOS XRv."""
 
     platform = 'XRv'
@@ -16,5 +17,10 @@ class Driver(XR):
     prepare_terminal_session = ['terminal exec prompt no-timestamp', 'terminal len 0', 'terminal width 0']
     reload_cmd = 'admin reload location all'
     families = {
-        "XRv": "IOS-XRv",
+        "9000": "IOSXRv-9K",
+        "x64": "IOSXRv-X64",
     }
+
+    def update_driver(self, prompt):
+        """Return driver name based on prompt analysis."""
+        return pattern_manager.platform(prompt, ['XRv', 'Calvados', 'Windriver'])
