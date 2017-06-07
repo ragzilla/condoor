@@ -109,11 +109,6 @@ class Driver(object):
             match = re.search("Build Information", version_text)
             if match:
                 os_type = "eXR"
-
-            match = re.search("XRv", version_text)
-            if match:
-                os_type = "XRv"
-
             match = re.search("XR Admin Software", version_text)
             if match:
                 os_type = "Calvados"

@@ -17,8 +17,8 @@ class Driver(eXR):
     prepare_terminal_session = ['terminal exec prompt no-timestamp', 'terminal len 0', 'terminal width 0']
     reload_cmd = 'admin reload location all'
     families = {
-        "9000": "IOSXRv-9K",
-        "x64": "IOSXRv-X64",
+        "IOS XRv 9000": "IOSXRv-9K",
+        "IOS XRv x64": "IOSXRv-X64",
     }
 
     def update_driver(self, prompt):
