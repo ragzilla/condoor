@@ -340,12 +340,12 @@ class Connection(object):
         self.emit_message("Target device connected in {:.0f}s.".format(elapsed), log_level=logging.INFO)
         logger.debug("-" * 20)
 
-    def send(self, cmd="", timeout=60, wait_for_string=None, password=False):
+    def send(self, cmd="", timeout=300, wait_for_string=None, password=False):
         """Send the command to the device and return the output.
 
         Args:
             cmd (str): Command string for execution. Defaults to empty string.
-            timeout (int): Timeout in seconds. Defaults to 60s
+            timeout (int): Timeout in seconds. Defaults to 300 sec (5 min)
             wait_for_string (str): This is optional string that driver
             waits for after command execution. If none the detected
             prompt will be used.
