@@ -149,3 +149,15 @@ class Driver(Generic):
 
         fsm = FSM("RELOAD", self.device, events, transitions, timeout=600)
         return fsm.run()
+
+    def config(self, text, plane, attributes):
+        events = [self.prompt_re]
+        transitions = [
+            (self.prompt_re, [0], 1, partial(a_send_line, 'end'), 10),
+            (self.prompt_re, [1], -1, None, 0)
+        ]
+        self.device.ctrl.send_command(self.config_cmd)
+        fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=5)
+        fsm.run()
+        return None
+
