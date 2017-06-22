@@ -23,6 +23,7 @@ class Driver(object):
     users_cmd = None
     target_prompt_components = ['prompt_dynamic']
     prepare_terminal_session = ['terminal len 0']
+    config_cmd = 'configure terminal'
     families = {}
 
     def __init__(self, device):
@@ -324,3 +325,11 @@ class Driver(object):
             hostname = self.device.hostname
             logger.debug("Hostname not set: {}".format(prompt))
         return hostname
+
+    def config(self, text, plane, attributes):
+        logger.warning("Device configuration not supported.")
+        return None
+
+    def rollback(self, label, plane):
+        logger.warning("Device configuration rollback not supported.")
+        return None
