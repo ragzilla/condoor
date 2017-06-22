@@ -96,7 +96,7 @@ class Driver(Generic):
         return fsm.run()
 
     def config(self, config_text, plane):
-
+        """Apply config."""
         nol = config_text.count('\n')
         config_lines = lines(config_text)
         events = [self.prompt_re, self.syntax_error_re]
@@ -105,7 +105,7 @@ class Driver(Generic):
             (self.syntax_error_re, [0], -1, CommandSyntaxError("Configuration syntax error."), 0)
         ]
         self.device.ctrl.send_command(self.config_cmd)
-        fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=nol+5)
+        fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=nol + 5)
         fsm.run()
 
         events = [self.prompt_re]
@@ -121,6 +121,7 @@ class Driver(Generic):
         return label
 
     def rollback(self, label, plane):
+        """"Rollback config."""
         events = [self.prompt_re]
         transitions = [
             (self.prompt_re, [0], -1, None, 0)
@@ -131,5 +132,3 @@ class Driver(Generic):
         fsm = FSM("ROLLBACK", self.device, events, transitions, timeout=120, max_transitions=5)
         fsm.run()
         return cm_label
-
-

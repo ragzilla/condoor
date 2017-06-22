@@ -364,16 +364,16 @@ class Connection(object):
 
     def config(self, configlet=None, plane='sdr', **attributes):
         """Configure the device.
-        
-        This method apply configuration to the device.
+
+        This method applies configuration to the device.
 
         Args:
             configlet (text): The configuration template.
             plane (text): sdr or admin
             attributes (dict): The dictionary of attributes used in template.
-    
+
         Returns:
-            A string with commit tag or None
+            A string with commit label or None
         """
         begin = time.time()
         label = self._chain.target_device.config(configlet=configlet, plane=plane, **attributes)
@@ -388,15 +388,15 @@ class Connection(object):
 
     def rollback(self, label=None, plane='sdr'):
         """Rollback the configuration.
-        
-        This method roll back the configuration on the device.
-        
+
+        This method rolls back the configuration on the device.
+
         Args:
             label (text): The configuration label ID
             plane: (text): sdr or admin
-        
+
         Returns:
-            A string with commit tag or None
+            A string with commit label or None
         """
         begin = time.time()
         rb_label = self._chain.target_device.rollback(label=label, plane=plane)
