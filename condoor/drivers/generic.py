@@ -327,9 +327,11 @@ class Driver(object):
         return hostname
 
     def config(self, text, plane, attributes):
+        """Apply config."""
         logger.warning("Device configuration not supported.")
         return None
 
     def rollback(self, label, plane):
+        """Rollback config."""
         logger.warning("Device configuration rollback not supported.")
         return None

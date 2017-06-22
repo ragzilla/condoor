@@ -475,7 +475,6 @@ class Device(object):
 
     def config(self, configlet, plane, **attributes):
         """Apply config to the device."""
-
         try:
             config_text = configlet.format(**attributes)
         except KeyError as exp:

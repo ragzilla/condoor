@@ -151,6 +151,7 @@ class Driver(Generic):
         return fsm.run()
 
     def config(self, text, plane, attributes):
+        """Apply config."""
         events = [self.prompt_re]
         transitions = [
             (self.prompt_re, [0], 1, partial(a_send_line, 'end'), 10),
@@ -160,4 +161,3 @@ class Driver(Generic):
         fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=5)
         fsm.run()
         return None
-
