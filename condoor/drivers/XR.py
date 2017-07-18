@@ -25,6 +25,7 @@ class Driver(Generic):
         "ASR9K": "ASR9K",
         "ASR-9": "ASR9K",
         "CRS": "CRS",
+        "12": "XR12K",
     }
 
     def __init__(self, device):
