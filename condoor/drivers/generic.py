@@ -11,6 +11,7 @@ from condoor.exceptions import ConnectionError, CommandError, CommandSyntaxError
 from condoor.utils import pattern_to_str
 
 from condoor import pattern_manager
+from condoor.config import CONF
 
 logger = logging.getLogger(__name__)
 
@@ -326,7 +327,7 @@ class Driver(object):
             logger.debug("Hostname not set: {}".format(prompt))
         return hostname
 
-    def config(self, text, plane, attributes):
+    def config(self, text, plane):
         """Apply config."""
         logger.warning("Device configuration not supported.")
         return None
@@ -335,3 +336,23 @@ class Driver(object):
         """Rollback config."""
         logger.warning("Device configuration rollback not supported.")
         return None
+
+    def enter_plane(self, plane):
+        """Enter the device plane.
+        
+        Enter the device plane a.k.a. mode, i.e. admin, qnx, calvados
+        """
+        try:
+            cmd = CONF['driver'][self.platform]['planes'][plane]
+        except KeyError:
+            cmd = None
+
+        if cmd:
+            logger.info("Entering the {} plane".format(plane))
+            self.device.send(cmd)
+
+    def exit_plane(self):
+        """Exit the device plane."""
+
+        self.device.send('exit')
+

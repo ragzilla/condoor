@@ -6,13 +6,16 @@ import logging
 import time
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError, \
-    CommandSyntaxError
+    CommandSyntaxError, ConfigurationErrors
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
-    a_message_callback, a_return_and_reconnect, a_not_committed, a_send_line
+    a_message_callback, a_return_and_reconnect, a_not_committed, a_send_line, a_capture_show_configuration_failed
 from condoor.utils import lines
+from condoor.config import CONF
 
 logger = logging.getLogger(__name__)
+
+_C = CONF['driver']['XR']
 
 
 class Driver(Generic):
@@ -98,6 +101,12 @@ class Driver(Generic):
 
     def config(self, config_text, plane):
         """Apply config."""
+
+        NO_CONFIGURATION_CHANGE = re.compile("No configuration changes to commit")
+        CONFIGURATION_FAILED = re.compile("show configuration failed")
+
+        self.enter_plane(plane)
+
         nol = config_text.count('\n')
         config_lines = lines(config_text)
         events = [self.prompt_re, self.syntax_error_re]
@@ -109,9 +118,11 @@ class Driver(Generic):
         fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=nol + 5)
         fsm.run()
 
-        events = [self.prompt_re]
+        events = [self.prompt_re, NO_CONFIGURATION_CHANGE, CONFIGURATION_FAILED]
         transitions = [
-            (self.prompt_re, [0], 1, partial(a_send_line, 'end'), 0),
+            (NO_CONFIGURATION_CHANGE, [0], -1, ConfigurationErrors("No configuration changes to commit."), 0),
+            (CONFIGURATION_FAILED, [0], 2, a_capture_show_configuration_failed, 10),
+            (self.prompt_re, [0], 1, partial(a_send_line, 'end'), 60),
             (self.prompt_re, [1], -1, None, 0)
         ]
 
@@ -119,17 +130,12 @@ class Driver(Generic):
         self.device.ctrl.send_command(self.commit_cmd.format(label))
         fsm = FSM("COMMIT", self.device, events, transitions, timeout=120, max_transitions=5)
         fsm.run()
+
+        self.exit_plane()
         return label
 
     def rollback(self, label, plane):
         """"Rollback config."""
-        events = [self.prompt_re]
-        transitions = [
-            (self.prompt_re, [0], -1, None, 0)
-        ]
-
         cm_label = 'condoor-{}'.format(int(time.time()))
-        self.device.ctrl.send_command(self.rollback_cmd.format(label))
-        fsm = FSM("ROLLBACK", self.device, events, transitions, timeout=120, max_transitions=5)
-        fsm.run()
+        self.device.send(self.rollback_cmd.format(label), timeout=120)
         return cm_label

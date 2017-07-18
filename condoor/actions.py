@@ -2,7 +2,8 @@
 import types
 import logging
 from condoor.fsm import action
-from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, ConnectionTimeoutError
+from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, ConnectionTimeoutError,\
+    ConfigurationSemanticErrors, ConfigurationErrors
 
 
 @action
@@ -205,3 +206,15 @@ def a_message_callback(ctx):
     message = ctx.ctrl.after.strip().splitlines()[-1]
     ctx.device.chain.connection.emit_message(message, log_level=logging.INFO)
     return True
+
+
+@action
+def a_capture_show_configuration_failed(ctx):
+    result = ctx.device.send("show configuration failed")
+    ctx.device.last_command_result = result
+    index = result.find("SEMANTIC ERRORS")
+    if index > 0:
+        raise ConfigurationSemanticErrors(result)
+    else:
+        raise ConfigurationErrors(result)
+
