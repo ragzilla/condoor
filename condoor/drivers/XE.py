@@ -19,6 +19,7 @@ class Driver(IOSDriver):
     platform = 'XE'
     families = {
         "ASR-9": "ASR900",
+        "ASR1": "ASR1K"
     }
 
     def __init__(self, device):
