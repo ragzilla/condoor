@@ -130,7 +130,6 @@ class Driver(Generic):
         self.device.ctrl.send_command(self.commit_cmd.format(label))
         fsm = FSM("COMMIT", self.device, events, transitions, timeout=120, max_transitions=5)
         fsm.run()
-
         self.exit_plane()
         return label
 

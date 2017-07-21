@@ -327,7 +327,7 @@ class Driver(object):
             logger.debug("Hostname not set: {}".format(prompt))
         return hostname
 
-    def config(self, text, plane):
+    def config(self, text, plane, attributes):
         """Apply config."""
         logger.warning("Device configuration not supported.")
         return None
@@ -355,4 +355,3 @@ class Driver(object):
         """Exit the device plane."""
 
         self.device.send('exit')
-
