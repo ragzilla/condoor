@@ -101,7 +101,6 @@ class Driver(Generic):
 
     def config(self, config_text, plane):
         """Apply config."""
-
         NO_CONFIGURATION_CHANGE = re.compile("No configuration changes to commit")
         CONFIGURATION_FAILED = re.compile("show configuration failed")
 

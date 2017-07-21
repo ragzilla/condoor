@@ -339,7 +339,7 @@ class Driver(object):
 
     def enter_plane(self, plane):
         """Enter the device plane.
-        
+
         Enter the device plane a.k.a. mode, i.e. admin, qnx, calvados
         """
         try:
@@ -353,5 +353,4 @@ class Driver(object):
 
     def exit_plane(self):
         """Exit the device plane."""
-
         self.device.send('exit')
