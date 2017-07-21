@@ -53,6 +53,8 @@ class Driver(object):
         self.vty_re = pattern_manager.pattern(self.platform, 'vty')
         self.console_re = pattern_manager.pattern(self.platform, 'console')
 
+        self.plane = 'sdr'
+
     def __repr__(self):
         """Return the string representation of the driver class."""
         return str(self.platform)
@@ -344,6 +346,7 @@ class Driver(object):
         """
         try:
             cmd = CONF['driver'][self.platform]['planes'][plane]
+            self.plane = plane
         except KeyError:
             cmd = None
 
@@ -353,4 +356,5 @@ class Driver(object):
 
     def exit_plane(self):
         """Exit the device plane."""
-        self.device.send('exit')
+        if self.plane != 'sdr':
+            self.device.send('exit')
