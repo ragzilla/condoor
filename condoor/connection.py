@@ -362,6 +362,53 @@ class Connection(object):
         """
         return self._chain.send(cmd, timeout, wait_for_string, password)
 
+    def config(self, configlet=None, plane='sdr', **attributes):
+        """Configure the device.
+
+        This method applies configuration to the device.
+
+        Args:
+            configlet (text): The configuration template.
+            plane (text): sdr or admin
+            attributes (dict): The dictionary of attributes used in template.
+
+        Returns:
+            A string with commit label or None
+        """
+        begin = time.time()
+        label = self._chain.target_device.config(configlet=configlet, plane=plane, **attributes)
+        elapsed = time.time() - begin
+        if label:
+            self.emit_message("Configuration change last {:.0f}s. Label: {}".format(elapsed, label),
+                              log_level=logging.INFO)
+        else:
+            self.emit_message("Configuration failed.", log_level=logging.WARNING)
+
+        return label
+
+    def rollback(self, label=None, plane='sdr'):
+        """Rollback the configuration.
+
+        This method rolls back the configuration on the device.
+
+        Args:
+            label (text): The configuration label ID
+            plane: (text): sdr or admin
+
+        Returns:
+            A string with commit label or None
+        """
+        begin = time.time()
+        rb_label = self._chain.target_device.rollback(label=label, plane=plane)
+        elapsed = time.time() - begin
+        if label:
+            self.emit_message("Configuration rollback last {:.0f}s. Label: {}".format(elapsed, rb_label),
+                              log_level=logging.INFO)
+        else:
+            self.emit_message("Configuration failed.", log_level=logging.WARNING)
+
+        return rb_label
+
     def disconnect(self):
         """Disconnect the session from the device and all the jumphosts in the path."""
         self._chain.disconnect()
@@ -404,7 +451,7 @@ class Connection(object):
         if result:
             self._write_cache()
             elapsed = time.time() - begin
-            self.emit_message("Target device reloaded in {:.0f}s.".format(elapsed), log_level=logging.INFO)
+            self.emit_message("Target device reload last {:.0f}s.".format(elapsed), log_level=logging.INFO)
         else:
             self.emit_message("Target device not reloaded.", log_level=logging.ERROR)
         return result

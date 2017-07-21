@@ -84,3 +84,15 @@ class CommandTimeoutError(CommandError):
     """Command timeout error."""
 
     pass
+
+
+class ConfigurationErrors(GeneralError):
+    """Configuration errors."""
+
+    pass
+
+
+class ConfigurationSemanticErrors(GeneralError):
+    """Configuration semantic errors."""
+
+    pass

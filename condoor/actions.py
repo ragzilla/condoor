@@ -1,13 +1,21 @@
 """Provides predefined actions for Finite State Machines."""
+import types
 import logging
 from condoor.fsm import action
-from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, ConnectionTimeoutError
+from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, ConnectionTimeoutError,\
+    ConfigurationSemanticErrors, ConfigurationErrors
 
 
 @action
 def a_send_line(text, ctx):
     """Send text line to the controller followed by `os.linesep`."""
-    ctx.ctrl.sendline(text)
+    if isinstance(text, types.GeneratorType):
+        try:
+            ctx.ctrl.sendline(text.next())
+        except StopIteration:
+            ctx.finished = True
+    else:
+        ctx.ctrl.sendline(text)
     return True
 
 
@@ -198,3 +206,16 @@ def a_message_callback(ctx):
     message = ctx.ctrl.after.strip().splitlines()[-1]
     ctx.device.chain.connection.emit_message(message, log_level=logging.INFO)
     return True
+
+
+@action
+def a_capture_show_configuration_failed(ctx):
+    """Capture the show configuration failed result."""
+    result = ctx.device.send("show configuration failed")
+    ctx.device.last_command_result = result
+    index = result.find("SEMANTIC ERRORS")
+    ctx.device.chain.connection.emit_message(result, log_level=logging.ERROR)
+    if index > 0:
+        raise ConfigurationSemanticErrors(result)
+    else:
+        raise ConfigurationErrors(result)

@@ -472,3 +472,16 @@ class Device(object):
         """Wrap the FSM code."""
         self.ctrl.send_command(command)
         return FSM(name, self, events, transitions, timeout=timeout, max_transitions=max_transitions).run()
+
+    def config(self, configlet, plane, **attributes):
+        """Apply config to the device."""
+        try:
+            config_text = configlet.format(**attributes)
+        except KeyError as exp:
+            raise CommandSyntaxError("Configuration template error: {}".format(str(exp)))
+
+        return self.driver.config(config_text, plane)
+
+    def rollback(self, label=None, plane='sdr'):
+        """Rollback config on the device."""
+        return self.driver.rollback(label, plane)

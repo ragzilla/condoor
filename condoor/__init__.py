@@ -5,7 +5,8 @@ from condoor.config import CONF
 from condoor.patterns import YPatternManager as PatternManager
 
 from condoor.exceptions import CommandTimeoutError, ConnectionError, ConnectionTimeoutError, CommandError, \
-    CommandSyntaxError, ConnectionAuthenticationError, GeneralError, InvalidHopInfoError
+    CommandSyntaxError, ConnectionAuthenticationError, GeneralError, InvalidHopInfoError, ConfigurationErrors, \
+    ConfigurationSemanticErrors
 from version import __version__
 
 from pexpect import TIMEOUT, EOF
@@ -20,4 +21,5 @@ This is a python module providing access to Cisco devices over Telnet and SSH.
 
 __all__ = ('Connection', 'TIMEOUT', 'EOF', 'pattern_manager', 'CONF', 'InvalidHopInfoError',
            'CommandTimeoutError', 'ConnectionError', 'ConnectionTimeoutError', 'CommandError',
-           'CommandSyntaxError', 'ConnectionAuthenticationError', 'GeneralError', '__version__')
+           'CommandSyntaxError', 'ConnectionAuthenticationError', 'GeneralError', 'ConfigurationErrors',
+           'ConfigurationSemanticErrors', '__version__')

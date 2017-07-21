@@ -10,7 +10,7 @@ from condoor.actions import a_connection_closed, a_expected_prompt, a_stays_conn
     a_store_cmd_result, a_message_callback, a_send_line, a_reconnect, a_send_boot, a_return_and_reconnect
 from condoor.utils import pattern_to_str
 from condoor.fsm import FSM
-from condoor.drivers.generic import Driver as Generic
+from condoor.drivers.XR import Driver as XRDriver
 from condoor import pattern_manager, EOF
 from condoor.config import CONF
 
@@ -19,14 +19,11 @@ logger = logging.getLogger(__name__)
 _C = CONF['driver']['eXR']
 
 
-class Driver(Generic):
+class Driver(XRDriver):
     """This is a Driver class implementation for IOS XR 64 bit."""
 
     platform = 'eXR'
-    inventory_cmd = 'admin show inventory chassis'
-    users_cmd = 'show users'
     target_prompt_components = ['prompt_dynamic', 'prompt_default', 'rommon', 'xml']
-    prepare_terminal_session = ['terminal exec prompt no-timestamp', 'terminal len 0', 'terminal width 0']
     reload_cmd = 'admin hw-module location all reload'
     families = {
         "ASR9K": "ASR9K",
@@ -49,14 +46,14 @@ class Driver(Generic):
         self.calvados_connect_re = pattern_manager.pattern(self.platform, 'calvados_connect')
         self.calvados_term_length = pattern_manager.pattern(self.platform, 'calvados_term_length')
 
+    def update_driver(self, prompt):
+        """Return driver name based on prompt analysis."""
+        return pattern_manager.platform(prompt, ['eXR', 'Calvados', 'Windriver'])
+
     def get_version_text(self):
         """Return version information text."""
         version_text = self.device.send("show version", timeout=120)
         return version_text
-
-    def update_driver(self, prompt):
-        """Return driver name based on prompt analysis."""
-        return pattern_manager.platform(prompt, ['eXR', 'Calvados', 'Windriver'])
 
     def wait_for_string(self, expected_string, timeout=60):
         """Wait for string FSM for XR 64 bit."""
