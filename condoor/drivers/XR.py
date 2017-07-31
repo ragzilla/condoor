@@ -10,7 +10,6 @@ from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
     a_message_callback, a_return_and_reconnect, a_not_committed, a_send_line, a_capture_show_configuration_failed
-from condoor.utils import lines
 from condoor.config import CONF
 
 logger = logging.getLogger(__name__)
@@ -107,7 +106,7 @@ class Driver(Generic):
         self.enter_plane(plane)
 
         nol = config_text.count('\n')
-        config_lines = lines(config_text)
+        config_lines = iter(config_text.splitlines())
         events = [self.prompt_re, self.syntax_error_re]
         transitions = [
             (self.prompt_re, [0], 0, partial(a_send_line, config_lines), 10),

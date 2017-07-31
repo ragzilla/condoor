@@ -329,7 +329,7 @@ class Driver(object):
             logger.debug("Hostname not set: {}".format(prompt))
         return hostname
 
-    def config(self, text, plane, attributes):
+    def config(self, text, plane):
         """Apply config."""
         logger.warning("Device configuration not supported.")
         return None

@@ -314,14 +314,3 @@ def yaml_file_to_dict(script_name, path=None):
         default_dict = merge(user_dict, default_dict)
 
     return default_dict
-
-
-def lines(text=""):
-    """Generate lines from the text."""
-    prevnl = -1
-    while True:
-        nextnl = text.find('\n', prevnl + 1)
-        if nextnl < 0:
-            break
-        yield text[prevnl + 1:nextnl]
-        prevnl = nextnl

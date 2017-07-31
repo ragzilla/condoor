@@ -376,7 +376,7 @@ class Connection(object):
             A string with commit label or None
         """
         begin = time.time()
-        label = self._chain.target_device.config(configlet=configlet, plane=plane, **attributes)
+        label = self._chain.target_device.config(configlet, plane, **attributes)
         elapsed = time.time() - begin
         if label:
             self.emit_message("Configuration change last {:.0f}s. Label: {}".format(elapsed, label),

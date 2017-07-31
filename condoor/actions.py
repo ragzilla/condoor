@@ -1,5 +1,4 @@
 """Provides predefined actions for Finite State Machines."""
-import types
 import logging
 from condoor.fsm import action
 from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, ConnectionTimeoutError,\
@@ -9,7 +8,7 @@ from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, C
 @action
 def a_send_line(text, ctx):
     """Send text line to the controller followed by `os.linesep`."""
-    if isinstance(text, types.GeneratorType):
+    if hasattr(text, '__iter__'):
         try:
             ctx.ctrl.sendline(text.next())
         except StopIteration:
