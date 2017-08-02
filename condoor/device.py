@@ -219,6 +219,7 @@ class Device(object):
             ConnectionError: General connection error during command execution
             CommandSyntaxError: Command syntax error or unknown command.
             CommandTimeoutError: Timeout during command execution
+
         """
         if self.connected:
             output = ''
@@ -307,7 +308,7 @@ class Device(object):
             logger.debug('Driver {}'.format(driver_name))
 
     def make_driver(self, driver_name='generic'):
-        """Factory function to make driver."""
+        """Make driver factory function."""
         module_str = 'condoor.drivers.%s' % driver_name
         try:
             __import__(module_str)

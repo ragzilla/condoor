@@ -132,7 +132,7 @@ class Driver(Generic):
         return label
 
     def rollback(self, label, plane):
-        """"Rollback config."""
+        """Rollback config."""
         cm_label = 'condoor-{}'.format(int(time.time()))
         self.device.send(self.rollback_cmd.format(label), timeout=120)
         return cm_label

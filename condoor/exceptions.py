@@ -5,7 +5,7 @@ class GeneralError(Exception):
     """General error."""
 
     def __init__(self, message=None, host=None):
-        """The class constructor.
+        """Initialize the GeneralError object.
 
         Args:
             message (str): Custom message to be passed to the exceptions. Defaults to *None*.
@@ -50,7 +50,7 @@ class CommandError(GeneralError):
     """Command execution error."""
 
     def __init__(self, message=None, host=None, command=None):
-        """The class constructor.
+        """Initialize CommandError object.
 
         Args:
             message (str): Custom message to be passed to the exceptions. Defaults to *None*.

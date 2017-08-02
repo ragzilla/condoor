@@ -359,6 +359,7 @@ class Connection(object):
             ConnectionError: General connection error during command execution
             CommandSyntaxError: Command syntax error or unknown command.
             CommandTimeoutError: Timeout during command execution
+
         """
         return self._chain.send(cmd, timeout, wait_for_string, password)
 
@@ -374,6 +375,7 @@ class Connection(object):
 
         Returns:
             A string with commit label or None
+
         """
         begin = time.time()
         label = self._chain.target_device.config(configlet, plane, **attributes)
@@ -397,6 +399,7 @@ class Connection(object):
 
         Returns:
             A string with commit label or None
+
         """
         begin = time.time()
         rb_label = self._chain.target_device.rollback(label=label, plane=plane)
