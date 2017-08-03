@@ -8,6 +8,7 @@ from condoor.drivers.IOS import Driver as IOSDriver
 from condoor import pattern_manager, TIMEOUT, EOF
 from condoor.actions import a_send_line, a_send, a_disconnect, a_message_callback, a_return_and_reconnect
 from condoor.fsm import FSM
+from condoor.exceptions import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,8 @@ class Driver(IOSDriver):
 
     def update_driver(self, prompt):
         """Return driver name based on prompt analysis."""
+        if "-stby" in prompt:
+            raise ConnectionError("Standby console detected")
         return pattern_manager.platform(prompt, ['XE'])
 
     def reload(self, reload_timeout=300, save_config=True):
