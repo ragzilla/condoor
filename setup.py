@@ -103,7 +103,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     author='Klaudiusz Staniek',
-    author_email='klstanie [at] cisco.com',
+    author_email='klstanie@cisco.com',
     url='https://github.com/kstaniek/condoor',
     download_url='https://github.com/kstaniek/condoor/tarball/{}'.format(version()),
     keywords='cisco,automation',
