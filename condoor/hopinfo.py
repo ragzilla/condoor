@@ -14,7 +14,7 @@ protocol2port_map = {
 
 
 def make_hop_info_from_url(url, verify_reachability=None):
-    """Factory function to build HopInfo object from url.
+    """Build HopInfo object from url.
 
     It allows only telnet and ssh as a valid protocols.
 

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def action(func):
-    """Wrapper for FSM action function providing extended logging information based on doc string."""
+    """Wrap the FSM action function providing extended logging information based on doc string."""
     @wraps(func)
     def call_action(*args, **kwargs):
         """Wrap the function with logger debug."""
@@ -145,6 +145,7 @@ class FSM(object):
 
         Returns:
             boolean: True if FSM reaches the last state or false if the exception or error message was raised
+
         """
         ctx = FSM.Context(self.name, self.device)
         transition_counter = 0

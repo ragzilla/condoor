@@ -22,5 +22,5 @@ protocol2object = defaultdict(
 
 
 def make_protocol(protocol_name, device):
-    """Factory function providing the Protocol object."""
+    """Make a protocol object factory function."""
     return protocol2object[protocol_name](device)

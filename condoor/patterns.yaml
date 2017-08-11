@@ -84,10 +84,11 @@ jumphost:
   version: '^([a-zA-Z0-9].*)'
 
 XR:
-  prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
+  # prompt: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
+  prompt: 'RP\/\d+\/(?:\d+(?!RS?P[0-1])|(?:RS?P[0-1]))\/CPU[0-3]:(?P<hostname>.*?)(\([^()]*\))?#'
   # prompt_dynamic: '{prompt}(\([^()]*\))?#'
-  prompt_dynamic: 'RP\/\d+\/RS?P[0-1]\/CPU[0-3]:?{hostname}(\([^()]*\))?#'
-  prompt_default: 'RP/[0-3]/RS?P[0-1]/CPU[0-1]:ios#'
+  prompt_dynamic: 'RP\/\d+\/(?:\d+(?!RS?P[0-1])|(?:RS?P[0-1]))\/CPU[0-3]:?{hostname}(\([^()]*\))?#'
+  prompt_default: 'RP\/\d+\/(?:\d+(?!RS?P[0-1])|(?:RS?P[0-1]))\/CPU[0-3]:ios#'
   rommon: 'rommon \d+ >'
   xml: 'XML> '
   qnx: '# '

@@ -33,7 +33,7 @@ def echo_info(conn):
 
 
 class URL(click.ParamType):
-    """URL type validator."""
+    """This is URL type validator."""
 
     name = 'url'
 
@@ -75,7 +75,7 @@ log_levels = {
 @click.option("--print-info", is_flag=True,
               help="Print the discovered information.")
 def run(url, cmd, log_path, log_level, log_session, force_discovery, print_info):
-    """Main function."""
+    """Run the main function."""
     log_level = log_levels[log_level]
     conn = condoor.Connection("host", list(url), log_session=log_session, log_level=log_level, log_dir=log_path)
     try:

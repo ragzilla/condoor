@@ -200,11 +200,11 @@ class FilteredFile(object):
         self._file.write(text)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Custom context manager exit method."""
+        """Exit from context."""
         self._file.close()
 
     def __enter__(self):
-        """Custom context manager exit method."""
+        """Enter the context."""
         return self
 
 

@@ -219,6 +219,7 @@ class Device(object):
             ConnectionError: General connection error during command execution
             CommandSyntaxError: Command syntax error or unknown command.
             CommandTimeoutError: Timeout during command execution
+
         """
         if self.connected:
             output = ''
@@ -307,7 +308,7 @@ class Device(object):
             logger.debug('Driver {}'.format(driver_name))
 
     def make_driver(self, driver_name='generic'):
-        """Factory function to make driver."""
+        """Make driver factory function."""
         module_str = 'condoor.drivers.%s' % driver_name
         try:
             __import__(module_str)
@@ -472,3 +473,16 @@ class Device(object):
         """Wrap the FSM code."""
         self.ctrl.send_command(command)
         return FSM(name, self, events, transitions, timeout=timeout, max_transitions=max_transitions).run()
+
+    def config(self, configlet, plane, **attributes):
+        """Apply config to the device."""
+        try:
+            config_text = configlet.format(**attributes)
+        except KeyError as exp:
+            raise CommandSyntaxError("Configuration template error: {}".format(str(exp)))
+
+        return self.driver.config(config_text, plane)
+
+    def rollback(self, label=None, plane='sdr'):
+        """Rollback config on the device."""
+        return self.driver.rollback(label, plane)
