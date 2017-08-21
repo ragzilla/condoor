@@ -139,10 +139,13 @@ class Driver(object):
         if match:
             logger.debug("Platform string: {}".format(match.group()))
             family = match.group(1)
-            for key, value in self.families.items():
+            # sort keys on len reversed (longest first)
+            for key in sorted(self.families, key=len, reverse=True):
                 if family.startswith(key):
-                    family = value
+                    family = self.families[key]
                     break
+            else:
+                logger.error("Platform {} not supported".format(family))
         else:
             logger.debug("Platform string not present. Refer to CSCux08958")
         return family

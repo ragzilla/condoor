@@ -194,6 +194,11 @@ class NCS1KHandler(XRHandler):
         self.RUNSHELL = False
 
 
+class NCS1001Handler(XRHandler):
+    platform = "NCS1001"
+    PROMPT = "RP/0/RP0/CPU0:ncs1001-fb-1#"
+
+
 class NCS4KHandler(XRHandler):
     platform = "NCS4K"
 

@@ -1,0 +1,6 @@
+Mon Aug 21 09:12:48.950 UTC
+Node 0/RP0/CPU0 [RP]
+  Boot Partition: xr_lv0
+  Committed Packages: 2
+        ncs1001-xr-6.2.1 version=6.2.1 [Boot image]
+        ncs1001-k9sec-1.0.0.0-r621
