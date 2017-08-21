@@ -183,7 +183,8 @@ NX-OS:
 Calvados:
   prompt: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'
   # prompt_dynamic: '{prompt}(\([^()]*\))?#'
-  prompt_dynamic: '{hostname}(\([^()]*\))?#'
+  # prompt_dynamic: '{hostname}(\([^()]*\))?#'
+  prompt_dynamic: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?{hostname}(\([^()]*\))?#'
   prompt_default: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]#'
   exr: 'RP\/[0-3]\/RS?P[0-1](?:\/CPU[0-3])?:(.*?)(\([^()]*\))?#'
   windriver: '\[sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:(.*)\]\$'
