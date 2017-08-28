@@ -1,0 +1,24 @@
+
+
+Cisco IOS XR Software, Version 4.2.1[Default]
+Copyright (c) 2012 by Cisco Systems, Inc.
+
+ROM: ROMMON System Bootstrap, Version 1.04(0), RELEASE SOFTWARE
+
+GSR-PE19 uptime is 8 minutes
+System image file is "disk0:c12k-os-mbi-4.2.1/mbiprp-rp.vm"
+
+cisco 12416/PRP (8641D) processor with 8388608K bytes of memory.
+8641D processor at 1330Mhz, Revision 3.0
+Cisco 12416 320 Gbps
+
+2 Cisco 12000 Series SPA Interface Processor-600
+2 Cisco 12000 Series SPA Interface Processor-601/501/401
+1 Cisco 12000 4-Port ISE ATM Over SONET OC12/STM-4 Controller (4 ATM)
+1 Cisco 12000 Series Performance Route Processor 3
+2 Management Ethernet
+12 PLIM_QOS
+895k bytes of non-volatile configuration memory.
+3515M bytes of compact flash card.
+22896M bytes of hard disk.
+3600048k bytes of disk0: (Sector size 512 bytes).

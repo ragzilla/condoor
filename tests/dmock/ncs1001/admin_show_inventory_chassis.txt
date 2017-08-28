@@ -1,0 +1,4 @@
+Mon Aug 21 09:11:29.451 UTC
+
+ Name: Rack 0                Descr: Network Convergence System 1001 line system 3 slots
+ PID: NCS1001-K9             VID: V01                   SN: CAT2051B0XT

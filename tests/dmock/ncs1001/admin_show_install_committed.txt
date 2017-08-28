@@ -1,0 +1,4 @@
+Mon Aug 21 09:10:13.093 UTC
+ Node 0/RP0 [RP]
+    Committed Packages: 1
+       ncs1001-sysadmin-6.2.1 version=6.2.1 [Boot image]

@@ -1,0 +1,84 @@
+
+Secure Domain Router: Owner
+
+  Node 0/0/CPU0 [LC(E5-CEC)] [SDR: Owner]
+    Boot Device: mem:
+    Boot Image: /disk0/c12k-os-mbi-4.2.1/gsr/ucode/mbiprp-lc.ucode
+    Active Packages:
+      disk0:c12k-4.2.1.CSCug89875-1.0.0
+      disk0:c12k-4.2.1.CSCua44826-1.0.0
+      disk0:c12k-mini-4.2.1
+      disk0:c12k-k9sec-p-4.2.1
+      disk0:c12k-mpls-p-4.2.1
+      disk0:c12k-mcast-p-4.2.1
+      disk0:c12k-4.2.1.CSCuj72464-1.0.0
+      disk0:c12k-4.2.1.CSCut52232-1.0.0
+      disk0:c12k-4.2.1.CSCug82278-1.0.0
+      disk0:c12k-fpd-p-4.2.1
+      disk0:c12k-diags-4.2.1
+
+  Node 0/1/CPU0 [LC(E5-CEC-v2)] [SDR: Owner]
+    Boot Device: mem:
+    Boot Image: /disk0/c12k-os-mbi-4.2.1/gsr/ucode/mbiprp-lc.ucode
+    Active Packages:
+      disk0:c12k-4.2.1.CSCug89875-1.0.0
+      disk0:c12k-4.2.1.CSCua44826-1.0.0
+      disk0:c12k-mini-4.2.1
+      disk0:c12k-k9sec-p-4.2.1
+      disk0:c12k-mpls-p-4.2.1
+      disk0:c12k-mcast-p-4.2.1
+      disk0:c12k-4.2.1.CSCuj72464-1.0.0
+      disk0:c12k-4.2.1.CSCut52232-1.0.0
+      disk0:c12k-4.2.1.CSCug82278-1.0.0
+      disk0:c12k-fpd-p-4.2.1
+      disk0:c12k-diags-4.2.1
+
+  Node 0/3/CPU0 [LC(E5-CEC-v2)] [SDR: Owner]
+    Boot Device: mem:
+    Boot Image: /disk0/c12k-os-mbi-4.2.1/gsr/ucode/mbiprp-lc.ucode
+    Active Packages:
+      disk0:c12k-4.2.1.CSCug89875-1.0.0
+      disk0:c12k-4.2.1.CSCua44826-1.0.0
+      disk0:c12k-mini-4.2.1
+      disk0:c12k-k9sec-p-4.2.1
+      disk0:c12k-mpls-p-4.2.1
+      disk0:c12k-mcast-p-4.2.1
+      disk0:c12k-4.2.1.CSCuj72464-1.0.0
+      disk0:c12k-4.2.1.CSCut52232-1.0.0
+      disk0:c12k-4.2.1.CSCug82278-1.0.0
+      disk0:c12k-fpd-p-4.2.1
+      disk0:c12k-diags-4.2.1
+
+  Node 0/6/CPU0 [LC(E5-CEC)] [SDR: Owner]
+    Boot Device: mem:
+    Boot Image: /disk0/c12k-os-mbi-4.2.1/gsr/ucode/mbiprp-lc.ucode
+    Active Packages:
+      disk0:c12k-4.2.1.CSCug89875-1.0.0
+      disk0:c12k-4.2.1.CSCua44826-1.0.0
+      disk0:c12k-mini-4.2.1
+      disk0:c12k-k9sec-p-4.2.1
+      disk0:c12k-mpls-p-4.2.1
+      disk0:c12k-mcast-p-4.2.1
+      disk0:c12k-4.2.1.CSCuj72464-1.0.0
+      disk0:c12k-4.2.1.CSCut52232-1.0.0
+      disk0:c12k-4.2.1.CSCug82278-1.0.0
+      disk0:c12k-fpd-p-4.2.1
+      disk0:c12k-diags-4.2.1
+
+  Node 0/7/CPU0 [RP-PRP3] [SDR: Owner]
+    Boot Device: disk0:
+    Boot Image: /disk0/c12k-os-mbi-4.2.1/mbiprp-rp.vm
+    Active Packages:
+      disk0:c12k-4.2.1.CSCug89875-1.0.0
+      disk0:c12k-4.2.1.CSCua44826-1.0.0
+      disk0:c12k-mini-4.2.1
+      disk0:c12k-k9sec-p-4.2.1
+      disk0:c12k-mpls-p-4.2.1
+      disk0:c12k-mgbl-p-4.2.1
+      disk0:c12k-mcast-p-4.2.1
+      disk0:c12k-doc-p-4.2.1
+      disk0:c12k-4.2.1.CSCuj72464-1.0.0
+      disk0:c12k-4.2.1.CSCug82278-1.0.0
+      disk0:c12k-4.2.1.CSCut52232-1.0.0
+      disk0:c12k-fpd-p-4.2.1
+      disk0:c12k-diags-4.2.1

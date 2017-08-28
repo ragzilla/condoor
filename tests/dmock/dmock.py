@@ -181,6 +181,14 @@ class ASR9K64Handler(XRHandler):
     platform = "ASR9K-64"
 
 
+class XR12KHandler(XRHandler):
+    """
+    Standard ASR9000 64 bit Handler
+    """
+    platform = "XR12K"
+    PROMPT = "RP/0/7/CPU0:GSR-PE19#"
+
+
 class NCS1KHandler(XRHandler):
     platform = "NCS1K"
     response_dict = {
@@ -192,6 +200,11 @@ class NCS1KHandler(XRHandler):
 
     def disconnect(self):
         self.RUNSHELL = False
+
+
+class NCS1001Handler(XRHandler):
+    platform = "NCS1001"
+    PROMPT = "RP/0/RP0/CPU0:ncs1001-fb-1#"
 
 
 class NCS4KHandler(XRHandler):

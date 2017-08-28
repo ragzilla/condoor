@@ -1,0 +1,3 @@
+
+NAME: "Chassis", DESCR: "Cisco 12416 320 Gbps"
+PID: GSR16/320, VID: 1.0, SN: TBM12077586

@@ -33,8 +33,9 @@ class Driver(XRDriver):
         "NCS-4": "NCS4K",
         "NCS-50": "NCS5K",
         "NCS-55": "NCS5500",
-        "NCS1": "NCS1K",
+        "NCS-1001": "NCS1001",
         "NCS-1": "NCS1K",
+        "NCS1": "NCS1K",
         "IOS-XRv 9000": "IOSXRv-9K",
         "IOS XRv x64": "IOSXRv-X64",
     }
