@@ -1,0 +1,4 @@
+
+   Line            User                 Service  Conns   Idle        Location
+   aux0/7/CPU0                          hardware     0  00:08:00
+*  vty0            condor               telnet       0  00:00:00     9.1.0.245

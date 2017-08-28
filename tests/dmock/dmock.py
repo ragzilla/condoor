@@ -181,6 +181,14 @@ class ASR9K64Handler(XRHandler):
     platform = "ASR9K-64"
 
 
+class XR12KHandler(XRHandler):
+    """
+    Standard ASR9000 64 bit Handler
+    """
+    platform = "XR12K"
+    PROMPT = "RP/0/7/CPU0:GSR-PE19#"
+
+
 class NCS1KHandler(XRHandler):
     platform = "NCS1K"
     response_dict = {
