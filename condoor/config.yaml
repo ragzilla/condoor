@@ -9,6 +9,11 @@ protocol:
     first_prompt_timeout: 30
     # SSH -o ConnectTimeout value (30) - not supported on SunOS
     connect_timeout: 120
+    options:
+      - "UserKnownHostsFile=/dev/null"
+      - "StrictHostKeyChecking=no"
+      - "HostKeyAlgorithms=+ssh-dss"
+      - "LogLevel=QUIET"
 
   console:
     first_prompt_timeout: 20
