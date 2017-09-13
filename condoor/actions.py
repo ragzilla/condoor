@@ -218,3 +218,15 @@ def a_capture_show_configuration_failed(ctx):
         raise ConfigurationSemanticErrors(result)
     else:
         raise ConfigurationErrors(result)
+
+
+@action
+def a_configuration_inconsistency(ctx):
+    """Raise the configuration inconsistency error."""
+    ctx.msg = "This SDR's running configuration is inconsistent with persistent configuration. " \
+              "No configuration commits for this SDR will be allowed until a 'clear configuration inconsistency' " \
+              "command is performed."
+    ctx.device.chain.connection.emit_message("Configuration inconsistency.", log_level=logging.ERROR)
+
+    ctx.finished = True
+    raise ConfigurationErrors("Configuration inconsistency.")
