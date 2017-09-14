@@ -1,0 +1,3 @@
+ Node 0/RP0 [RP]
+    Active Packages: 1
+       ncs5500-sysadmin-6.3.2.09I version=6.3.2.09I [Boot image]

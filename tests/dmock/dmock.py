@@ -214,6 +214,9 @@ class NCS4KHandler(XRHandler):
 class NCS5500Handler(XRHandler):
     platform = "NCS5500"
 
+class NCS540Handler(XRHandler):
+    platform = "NCS540"
+
 
 class NXOSHandler(DeviceHandler):
 

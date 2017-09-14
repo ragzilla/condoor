@@ -33,6 +33,8 @@ class Driver(XRDriver):
         "NCS-4": "NCS4K",
         "NCS-50": "NCS5K",
         "NCS-55": "NCS5500",
+        "NCS-54": "NCS5500",
+        "NCS-56": "NCS5500",
         "NCS-1001": "NCS1001",
         "NCS-1": "NCS1K",
         "NCS1": "NCS1K",

@@ -34,20 +34,24 @@ class SSH(Protocol):
 
     def get_command(self, version=2):
         """Return the SSH protocol specific command to connect."""
+        try:
+            options = _C['options']
+            options_str = " -o ".join(options)
+            if options_str:
+                options_str = "-o " + options_str + " "
+        except KeyError:
+            options_str = ""
+
         if self.username:
             # Not supported on SunOS
             # "-o ConnectTimeout={}
-            command = "ssh " \
-                      "-o UserKnownHostsFile=/dev/null " \
-                      "-o StrictHostKeyChecking=no " \
+            command = "ssh {}" \
                       "-{} " \
-                      "-p {} {}@{}".format(version, self.port, self.username, self.hostname)
+                      "-p {} {}@{}".format(options_str, version, self.port, self.username, self.hostname)
         else:
-            command = "ssh " \
-                      "-o UserKnownHostsFile=/dev/null " \
-                      "-o StrictHostKeyChecking=no " \
+            command = "ssh {} " \
                       "-{} " \
-                      "-p {} {}".format(version, self.port, self.hostname)
+                      "-p {} {}".format(options_str, version, self.port, self.hostname)
         return command
 
     def connect(self, driver):

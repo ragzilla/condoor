@@ -1,0 +1,14 @@
+
+Cisco IOS XR Software, Version 6.3.2.09I
+Copyright (c) 2013-2017 by Cisco Systems, Inc.
+
+Build Information:
+ Built By     : deenayak
+ Built On     : Thu Sep  7 03:42:15 PDT 2017
+ Build Host   : iox-lnx-014
+ Workspace    : /auto/iox-lnx-014-san2/production/6.3.2.09I.DT_IMAGE/ncs5500/workspace
+ Version      : 6.3.2.09I
+ Location     : /opt/cisco/XR/packages/
+
+cisco NCS-540 () processor
+System uptime is 2 days, 2 hours, 38 minutes

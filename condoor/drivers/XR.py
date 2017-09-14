@@ -9,7 +9,8 @@ from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError
     CommandSyntaxError, ConfigurationErrors
 from condoor.fsm import FSM
 from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_send_username, a_send_password,\
-    a_message_callback, a_return_and_reconnect, a_not_committed, a_send_line, a_capture_show_configuration_failed
+    a_message_callback, a_return_and_reconnect, a_not_committed, a_send_line, a_capture_show_configuration_failed, \
+    a_configuration_inconsistency
 from condoor.config import CONF
 
 logger = logging.getLogger(__name__)
@@ -102,6 +103,8 @@ class Driver(Generic):
         """Apply config."""
         NO_CONFIGURATION_CHANGE = re.compile("No configuration changes to commit")
         CONFIGURATION_FAILED = re.compile("show configuration failed")
+        CONFIGURATION_INCONSITENCY = re.compile("No configuration commits for this SDR will be allowed until "
+                                                "a 'clear configuration inconsistency' command is performed.")
 
         self.enter_plane(plane)
 
@@ -120,6 +123,7 @@ class Driver(Generic):
         transitions = [
             (NO_CONFIGURATION_CHANGE, [0], -1, ConfigurationErrors("No configuration changes to commit."), 0),
             (CONFIGURATION_FAILED, [0], 2, a_capture_show_configuration_failed, 10),
+            (CONFIGURATION_INCONSITENCY, [0], 2, a_configuration_inconsistency, 10),
             (self.prompt_re, [0], 1, partial(a_send_line, 'end'), 60),
             (self.prompt_re, [1], -1, None, 0)
         ]

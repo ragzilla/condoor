@@ -1,0 +1,3 @@
+
+ Name: Rack 0                Descr: NCS 540 Series 24x1/10GE, 8x10/25GE, 2x100GE Fixed Chassis
+ PID: N540-24Z8Q2C-M         VID: V01                   SN: FOC2118R11N

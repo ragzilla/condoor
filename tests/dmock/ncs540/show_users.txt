@@ -1,0 +1,2 @@
+   Line            User                 Service  Conns   Idle        Location
+*  con0/RP0/CPU0   root                 hardware     0  00:00:00
