@@ -12,7 +12,6 @@ protocol:
     options:
       - "UserKnownHostsFile=/dev/null"
       - "StrictHostKeyChecking=no"
-      - "HostKeyAlgorithms=+ssh-dss"
       - "LogLevel=QUIET"
 
   console:
