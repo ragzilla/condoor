@@ -1,4 +1,2 @@
-Wed Feb 10 14:35:23.725 UTC
-Secure Domain Router: Owner
-
-There are no inactive packages on the SDR.
+ Node 0/RP0 [RP]
+    Inactive Packages:

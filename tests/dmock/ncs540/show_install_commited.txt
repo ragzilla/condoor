@@ -1,33 +1,27 @@
-Wed Feb 10 14:37:45.014 UTC
-Secure Domain Router: Owner
+Node 0/RP0/CPU0 [RP]
+  Boot Partition: xr_lv0
+  Committed Packages: 10
+        ncs5500-xr-6.3.2.09I version=6.3.2.09I [Boot image]
+        ncs5500-mcast-2.1.0.0-r63209I
+        ncs5500-mpls-2.1.0.0-r63209I
+        ncs5500-eigrp-1.0.0.0-r63209I
+        ncs5500-mpls-te-rsvp-2.2.0.0-r63209I
+        ncs5500-ospf-2.0.0.0-r63209I
+        ncs5500-isis-1.2.0.0-r63209I
+        ncs5500-k9sec-3.1.0.0-r63209I
+        ncs5500-mgbl-3.0.0.0-r63209I
+        ncs5500-li-1.0.0.0-r63209I
 
-  Node 0/RSP0/CPU0 [RP] [SDR: Owner]
-    Boot Device: disk0:
-    Boot Image: /disk0/asr9k-os-mbi-5.3.3/0x100305/mbiasr9k-rsp3.vm
-    Committed Packages:
-      disk0:asr9k-mini-px-5.3.3
-      disk0:asr9k-k9sec-px-5.3.3
-      disk0:asr9k-mcast-px-5.3.3
-      disk0:asr9k-mgbl-px-5.3.3
-      disk0:asr9k-mpls-px-5.3.3
-      disk0:asr9k-bng-px-5.3.3
-
-  Node 0/0/CPU0 [LC] [SDR: Owner]
-    Boot Device: mem:
-    Boot Image: /disk0/asr9k-os-mbi-5.3.3/lc/mbiasr9k-lc.vm
-    Committed Packages:
-      disk0:asr9k-mini-px-5.3.3
-      disk0:asr9k-k9sec-px-5.3.3
-      disk0:asr9k-mcast-px-5.3.3
-      disk0:asr9k-mpls-px-5.3.3
-      disk0:asr9k-bng-px-5.3.3
-
-  Node 0/1/CPU0 [LC] [SDR: Owner]
-    Boot Device: mem:
-    Boot Image: /disk0/asr9k-os-mbi-5.3.3/lc/0x3C0266/mbiasr9k-lc-x86e.vm
-    Committed Packages:
-      disk0:asr9k-mini-px-5.3.3
-      disk0:asr9k-k9sec-px-5.3.3
-      disk0:asr9k-mcast-px-5.3.3
-      disk0:asr9k-mpls-px-5.3.3
-      disk0:asr9k-bng-px-5.3.3
+Node 0/0/CPU0 [LC]
+  Boot Partition: xr_lcp_lv0
+  Committed Packages: 10
+        ncs5500-xr-6.3.2.09I version=6.3.2.09I [Boot image]
+        ncs5500-mcast-2.1.0.0-r63209I
+        ncs5500-mpls-2.1.0.0-r63209I
+        ncs5500-eigrp-1.0.0.0-r63209I
+        ncs5500-mpls-te-rsvp-2.2.0.0-r63209I
+        ncs5500-ospf-2.0.0.0-r63209I
+        ncs5500-isis-1.2.0.0-r63209I
+        ncs5500-k9sec-3.1.0.0-r63209I
+        ncs5500-mgbl-3.0.0.0-r63209I
+        ncs5500-li-1.0.0.0-r63209I
