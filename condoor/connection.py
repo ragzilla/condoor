@@ -317,10 +317,16 @@ class Connection(object):
                 if chain.connect():
                     break
             except (ConnectionTimeoutError, ConnectionError) as e:  # pylint: disable=invalid-name
-                if chain.ctrl.is_connected:
-                    prompt = chain.ctrl.detect_prompt()
-                    index = chain.get_device_index_based_on_prompt(prompt)
-                    chain.tail_disconnect(index)
+                try:
+                    if chain.ctrl.is_connected:
+                        prompt = chain.ctrl.detect_prompt()
+                        if prompt is None:
+                            chain.disconnect()
+                        else:
+                            index = chain.get_device_index_based_on_prompt(prompt)
+                            chain.tail_disconnect(index)
+                except ConnectionTimeoutError as e:
+                    excpt = e
 
                 self.emit_message("Connection error: {}".format(e), log_level=logging.INFO)
                 chain_indices.rotate(-1)
