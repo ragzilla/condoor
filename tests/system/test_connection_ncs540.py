@@ -25,7 +25,7 @@ class TestNCS540Connection(CondoorTestCase):
 
         self.assertEqual(conn.is_discovered, True, "Not discovered properly")
         self.assertEqual(conn.hostname, "ios", "Wrong Hostname: {}".format(conn.hostname))
-        self.assertEqual(conn.family, "NCS5500", "Wrong Family: {}".format(conn.family))
+        self.assertEqual(conn.family, "NCS540", "Wrong Family: {}".format(conn.family))
         self.assertEqual(conn.platform, "N540", "Wrong Platform: {}".format(conn.platform))
         self.assertEqual(conn.os_type, "eXR", "Wrong OS Type: {}".format(conn.os_type))
         self.assertEqual(conn.os_version, "6.3.2.09I", "Wrong Version: {}".format(conn.os_version))

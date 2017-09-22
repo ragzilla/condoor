@@ -87,7 +87,7 @@ class Driver(Generic):
             (RECONFIGURE_USERNAME_PROMPT, [6, 7, 10], 8, None, 10),
             (ROOT_USERNAME_PROMPT, [8], 9, partial(a_send_username, self.device.node_info.username), 1),
             (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
-            (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 180),
+            (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 600),
             (CONFIGURATION_COMPLETED, [10], -1, a_reconnect, 0),
             (self.username_re, [7, 9], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),

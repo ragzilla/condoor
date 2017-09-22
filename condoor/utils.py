@@ -293,9 +293,7 @@ def yaml_file_to_dict(script_name, path=None):
                     user[k] = v
                 else:
                     user[k] = merge(user[k], v)
-            return user
-        else:
-            return default
+        return user
 
     if path is None:
         path = os.path.abspath('.')
@@ -306,11 +304,10 @@ def yaml_file_to_dict(script_name, path=None):
 
     default_dict = load_yaml(config_file_path)
 
-    user_config_file_path = os.path.join(os.path.expanduser('~'), '.condoor', script_name + '.yaml')
-    user_config_file_path = os.getenv('CONDOOR_' + script_name.upper(), user_config_file_path)
-
+    user_config_file_path = os.path.join(os.path.expanduser('~'), '.condoor', os.path.basename(script_name) + '.yaml')
+    user_config_file_path = os.getenv('CONDOOR_' + os.path.basename(script_name).upper(), user_config_file_path)
     if os.path.exists(user_config_file_path):
         user_dict = load_yaml(user_config_file_path)
-        default_dict = merge(user_dict, default_dict)
-
+        if user_dict:
+            default_dict = merge(user_dict, default_dict)
     return default_dict
