@@ -2,15 +2,12 @@
 
 from functools import partial
 import re
-import logging
 import pexpect
 
 from condoor.drivers.generic import Driver as Generic
 from condoor.actions import a_send_password, a_expected_prompt, a_send_line, a_send, a_disconnect, a_reconnect
 from condoor.exceptions import ConnectionAuthenticationError, ConnectionError
 from condoor.fsm import FSM
-
-logger = logging.getLogger(__name__)
 
 
 SAVE_CONFIG = re.compile(re.escape("System configuration has been modified. Save? [yes/no]: "))
@@ -43,7 +40,7 @@ class Driver(Generic):
     def enable(self, enable_password):
         """Change to the privilege mode."""
         if self.device.prompt[-1] == '#':
-            logger.debug("Device is already in privileged mode")
+            self.log("Device is already in privileged mode")
             return
 
         events = [self.password_re, self.device.prompt_re, pexpect.TIMEOUT, pexpect.EOF]

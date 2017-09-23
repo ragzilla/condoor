@@ -1,7 +1,6 @@
 """This is IOS XE driver implementation."""
 
 from functools import partial
-import logging
 import re
 
 from condoor.drivers.IOS import Driver as IOSDriver
@@ -9,8 +8,6 @@ from condoor import pattern_manager, TIMEOUT, EOF
 from condoor.actions import a_send_line, a_send, a_disconnect, a_message_callback, a_return_and_reconnect
 from condoor.fsm import FSM
 from condoor.exceptions import ConnectionError
-
-logger = logging.getLogger(__name__)
 
 
 # based on IOS driver

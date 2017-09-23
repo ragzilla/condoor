@@ -9,7 +9,8 @@ from hashlib import md5
 from collections import deque
 from condoor.chain import Chain
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
-from condoor.utils import FilteredFile, normalize_urls, make_handler
+from condoor.utils import FilteredFile, normalize_urls
+from condoor.log import FileLogger
 from condoor.version import __version__
 
 logger = logging.getLogger(__name__)
@@ -82,24 +83,19 @@ class Connection(object):
         self._info_msg_callback = None
 
         self.log_session = log_session
-        top_logger = logging.getLogger("condoor")
 
-        # remove existing handlers in case log_dir has changed.
-        for handler in top_logger.handlers:
-            top_logger.removeHandler(handler)
-
-        self._handler = make_handler(log_dir, log_level)
-        top_logger.addHandler(self._handler)
-
-        top_logger.setLevel(log_level)
+        self.logger_fd = self._make_logger_fd(log_dir)
+        self.log = FileLogger(self.logger_fd)
 
         if log_session:
             self.session_fd = self._make_session_fd(log_dir)
         else:
             self.session_fd = None
 
-        top_logger.info("Condoor Version {}".format(__version__))
-        top_logger.debug("Cache filename: {}".format(_CACHE_FILE))
+        # top_logger.info("Condoor Version {}".format(__version__))
+        self.log("Condoor Version {}".format(__version__))
+        # top_logger.debug("Cache filename: {}".format(_CACHE_FILE))
+        self.log("Cache filename: {}".format(_CACHE_FILE))
 
         self.connection_chains = [Chain(self, url_list) for url_list in normalize_urls(urls)]
 
@@ -113,15 +109,15 @@ class Connection(object):
         After calling this method the object can't be used anymore.
         This will be reworked when changing the logging model.
         """
-        if self._handler:
-            top_logger = logging.getLogger("condoor")
-            top_logger.removeHandler(self._handler)
-            self._handler.close()
-            self._handler = None
-
         if self.session_fd:
+            self.session_fd.flush()
             self.session_fd.close()
             self.session_fd = None
+
+        if self.logger_fd:
+            self.logger_fd.flush()
+            self.logger_fd.close()
+            self.logger_fd = None
 
         self._msg_callback = None
         self._error_msg_callback = None
@@ -136,7 +132,7 @@ class Connection(object):
                 session_fd = FilteredFile(os.path.join(log_dir, 'session.log'),
                                           mode="w", pattern=re.compile("s?ftp://.*:(.*)@"))
             except IOError:
-                logger.error("Unable to create session log file")
+                print("Unable to create session log file")
 
         else:
             if self.log_session:
@@ -145,17 +141,29 @@ class Connection(object):
 
         return session_fd
 
+    def _make_logger_fd(self, log_dir):
+        logger_fd = None
+        if log_dir is not None:
+            try:
+                logger_fd = open(os.path.join(log_dir, 'condoor-new.log')),
+            except IOError:
+                print("Unable to create log file")
+        else:
+            import sys
+            logger_fd = sys.stdout
+        return logger_fd
+
     def _get_key(self):
         key = md5()
         key.update(str(self.connection_chains))
-        logger.debug("Cache key: {}".format(self.connection_chains))
+        self.log("Cache key: {}".format(self.connection_chains))
         return key.hexdigest()
 
     def _cache_open(self, mode='r'):
         try:
             cache = shelve.open(_CACHE_FILE, mode)
         except Exception:
-            logger.error("Unable to open a cache file for read.")
+            self.log("Unable to open a cache file for read.")
             return None
         return cache
 
@@ -165,7 +173,7 @@ class Connection(object):
         if cache is not None:
             cache[key] = self.description_record
             cache.close()
-            logger.info("Connection information cached: {}".format(key))
+            self.log("Connection information cached: {}".format(key))
 
     def _read_cache(self):
         key = self._get_key()
@@ -173,9 +181,9 @@ class Connection(object):
         if cache is not None:
             try:
                 self.description_record = cache[key]
-                logger.info("Read cached information.")
+                self.log("Read cached information.")
             except KeyError:
-                logger.debug("Connection cache missed: {}.".format(key))
+                self.log("Connection cache missed: {}.".format(key))
             finally:
                 cache.close()
 
@@ -183,7 +191,7 @@ class Connection(object):
         # key = self._get_key()
         self._read_cache()
         self.description_record = None
-        logger.debug("Description record: {}".format(self.description_record))
+        self.log("Description record: {}".format(self.description_record))
         self._write_cache()
 
     def _chain_indices(self):
@@ -211,8 +219,8 @@ class Connection(object):
             ConnectionTimeoutError: If the connection timeout happened.
 
         """
-        logger.debug("-" * 20)
-        logger.debug("Connecting")
+        self.log("-" * 20)
+        self.log("Connecting")
 
         if logfile:
             self.session_fd = logfile
@@ -247,8 +255,8 @@ class Connection(object):
         self._write_cache()
         elapsed = time.time() - begin
         self.emit_message("Target device connected in {:.2f}s.".format(elapsed), log_level=logging.INFO)
-        logger.debug("Connected")
-        logger.debug("-" * 20)
+        self.log("Connected")
+        self.log("-" * 20)
 
     def reconnect(self, logfile=None, max_timeout=360, force_discovery=False):
         """Reconnect to the device.
@@ -344,7 +352,7 @@ class Connection(object):
 
         self._write_cache()
         self.emit_message("Target device connected in {:.0f}s.".format(elapsed), log_level=logging.INFO)
-        logger.debug("-" * 20)
+        self.log("-" * 20)
 
     def send(self, cmd="", timeout=300, wait_for_string=None, password=False):
         """Send the command to the device and return the output.
@@ -433,8 +441,8 @@ class Connection(object):
                 It the parameter is not passed then the default *session.log* file is created in `log_dir`.
 
         """
-        logger.warn("'discovery' method is deprecated. Please 'connect' with force_disovery=True.")
-        logger.info("Device discovery process started")
+        self.log("'discovery' method is deprecated. Please 'connect' with force_disovery=True.")
+        self.log("Device discovery process started")
         self.connect(logfile=logfile, force_discovery=True)
         self.disconnect()
 
@@ -543,7 +551,7 @@ class Connection(object):
 
     def emit_message(self, message, log_level):
         """Call the msg callback function with the message."""
-        logger.log(log_level, message)
+        self.log(message)
         if self._msg_callback:
             self._msg_callback(message)
 
@@ -789,7 +797,7 @@ class Connection(object):
             for chain, data in zip(self.connection_chains, cdr['connections']):
                 chain.update(None)
 
-            logger.debug("Connection information cleared")
+            self.log("Connection information cleared")
             return
 
         try:
@@ -797,6 +805,6 @@ class Connection(object):
                 chain.update(data['chain'])
             self._last_chain_index = cdr['last_chain']
         except KeyError:
-            logger.debug("Invalid connection information")
+            self.log("Invalid connection information")
 
-        logger.debug("Connection information updated from cache.")
+        self.log("Connection information updated from cache.")

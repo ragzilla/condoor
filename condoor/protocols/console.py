@@ -14,8 +14,6 @@ from condoor.actions import a_send, a_send_password, a_authentication_error, a_u
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
 from condoor.config import CONF
 
-logger = logging.getLogger(__name__)
-
 
 # Telnet connection initiated
 ESCAPE_CHAR = re.compile(re.escape("[Enter `^Ec?' for help]"))
@@ -65,7 +63,7 @@ class Console(Protocol):
             (pexpect.TIMEOUT, [0, 1], 5, partial(a_send, "\r\n"), 10),
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("CONSOLE-SERVER-CONNECT", self.device, events, transitions, timeout=_C['connect_timeout'],
                   init_pattern=self.last_pattern)
         return fsm.run()
@@ -92,7 +90,7 @@ class Console(Protocol):
             (pexpect.TIMEOUT, [3, 7], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
             (driver.unable_to_connect_re, [0, 1, 2], -1, a_unable_to_connect, 0),
         ]
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("CONSOLE-SERVER-AUTH", self.device, events, transitions, timeout=_C['connect_timeout'],
                   init_pattern=self.last_pattern)
         return fsm.run()
@@ -101,8 +99,8 @@ class Console(Protocol):
         """Disconnect using protocol specific method."""
         self.device.ctrl.sendcontrol('d')
         self.device.ctrl.send("c.")
-        logger.debug("CONSOLE SERVER disconnect")
+        self.log("CONSOLE SERVER disconnect")
         try:
             self.device.ctrl.send(chr(4))
         except OSError:
-            logger.debug("Protocol already disconnected")
+            self.log("Protocol already disconnected")

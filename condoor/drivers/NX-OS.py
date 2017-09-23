@@ -1,11 +1,7 @@
 """This is NX-OS driver class implementation."""
 
-import logging
-
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(Generic):
