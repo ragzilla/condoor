@@ -145,7 +145,7 @@ class Connection(object):
         logger_fd = None
         if log_dir is not None:
             try:
-                logger_fd = open(os.path.join(log_dir, 'condoor-new.log')),
+                logger_fd = open(os.path.join(log_dir, 'trace.log'), "w+")
             except IOError:
                 print("Unable to create log file")
         else:
