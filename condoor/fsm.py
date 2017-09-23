@@ -2,14 +2,11 @@
 
 from inspect import isclass
 from functools import wraps
-import logging
 from time import time
 
 from pexpect import EOF
 from condoor.exceptions import ConnectionError
 from condoor.utils import pattern_to_str
-
-logger = logging.getLogger(__name__)
 
 
 def action(func):
@@ -17,10 +14,15 @@ def action(func):
     @wraps(func)
     def call_action(*args, **kwargs):
         """Wrap the function with logger debug."""
-        if func.__doc__ is None:
-            logger.debug("A={}".format(func.__name__))
-        else:
-            logger.debug("A={}".format(func.__doc__.split('\n', 1)[0]))
+        try:
+            ctx = kwargs['ctx']
+        except KeyError:
+            ctx = None
+        if ctx:
+            if func.__doc__ is None:
+                ctx.device.chain.connection.log("A={}".format(func.__name__))
+            else:
+                ctx.device.chain.connection.log("A={}".format(func.__doc__.split('\n', 1)[0]))
         return func(*args, **kwargs)
     return call_action
 
@@ -119,6 +121,7 @@ class FSM(object):
         self.name = name
         self.init_pattern = init_pattern
         self.max_transitions = max_transitions
+        self.log = device.chain.connection.log
 
         self.transition_table = self._compile(transitions, events)
 
@@ -131,7 +134,7 @@ class FSM(object):
             try:
                 event_index = events.index(event)
             except ValueError:
-                logger.debug("Transition for non-existing event: {}".format(
+                self.log("Transition for non-existing event: {}".format(
                     event if isinstance(event, str) else event.pattern))
             else:
                 for state in states:
@@ -150,7 +153,7 @@ class FSM(object):
         ctx = FSM.Context(self.name, self.device)
         transition_counter = 0
         timeout = self.timeout
-        logger.debug("{} Start".format(self.name))
+        self.log("{} Start".format(self.name))
         while transition_counter < self.max_transitions:
             transition_counter += 1
             try:
@@ -158,11 +161,11 @@ class FSM(object):
                 if self.init_pattern is None:
                     ctx.event = self.ctrl.expect(self.events, searchwindowsize=self.searchwindowsize, timeout=timeout)
                 else:
-                    logger.debug("INIT_PATTERN={}".format(pattern_to_str(self.init_pattern)))
+                    self.log("INIT_PATTERN={}".format(pattern_to_str(self.init_pattern)))
                     try:
                         ctx.event = self.events.index(self.init_pattern)
                     except ValueError:
-                        logger.critical("INIT_PATTERN unknown.")
+                        self.log("INIT_PATTERN unknown.")
                         continue
                     finally:
                         self.init_pattern = None
@@ -174,36 +177,36 @@ class FSM(object):
                 if key in self.transition_table:
                     transition = self.transition_table[key]
                     next_state, action_instance, next_timeout = transition
-                    logger.debug("E={},S={},T={},RT={:.2f}".format(ctx.event, ctx.state, timeout, finish_time))
+                    self.log("E={},S={},T={},RT={:.2f}".format(ctx.event, ctx.state, timeout, finish_time))
                     if callable(action_instance) and not isclass(action_instance):
-                        if not action_instance(ctx):
-                            logger.error("Error: {}".format(ctx.msg))
+                        if not action_instance(ctx=ctx):
+                            self.log("Error: {}".format(ctx.msg))
                             return False
                     elif isinstance(action_instance, Exception):
-                        logger.debug("A=Exception {}".format(action_instance))
+                        self.log("A=Exception {}".format(action_instance))
                         raise action_instance
                     elif action_instance is None:
-                        logger.debug("A=None")
+                        self.log("A=None")
                     else:
-                        logger.error("FSM Action is not callable: {}".format(str(action_instance)))
+                        self.log("FSM Action is not callable: {}".format(str(action_instance)))
                         raise RuntimeWarning("FSM Action is not callable")
 
                     if next_timeout != 0:  # no change if set to 0
                         timeout = next_timeout
                     ctx.state = next_state
-                    logger.debug("NS={},NT={}".format(next_state, timeout))
+                    self.log("NS={},NT={}".format(next_state, timeout))
 
                 else:
-                    logger.warning("Unknown transition: EVENT={},STATE={}".format(ctx.event, ctx.state))
+                    self.log("Unknown transition: EVENT={},STATE={}".format(ctx.event, ctx.state))
                     continue
 
             except EOF:
                 raise ConnectionError("Session closed unexpectedly", self.ctrl.hostname)
 
             if ctx.finished or next_state == -1:
-                logger.debug("{} Stop at E={},S={}".format(self.name, ctx.event, ctx.state))
+                self.log("{} Stop at E={},S={}".format(self.name, ctx.event, ctx.state))
                 return True
 
         # check while else if even exists
-        logger.error("FSM looped. Exiting")
+        self.log("FSM looped. Exiting")
         return False

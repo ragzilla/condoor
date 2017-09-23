@@ -1,14 +1,11 @@
 """Provides Device class representing the physical device for both target and jumphost."""
 
 import sys
-import logging
 import pexpect
 
 from condoor.exceptions import ConnectionError, CommandSyntaxError, CommandTimeoutError
 from condoor.utils import parse_inventory
 from condoor.fsm import FSM
-
-logger = logging.getLogger(__name__)
 
 
 class Device(object):
@@ -85,7 +82,7 @@ class Device(object):
     @device_info.setter
     def device_info(self, info):
         for key, value in info.items():
-            logger.debug("Update: [{}] {}<-{}".format(self, key, value))
+            self.chain.connection.log("Update: [{}] {}<-{}".format(self, key, value))
             setattr(self, key, value)
 
     def __repr__(self):
@@ -184,7 +181,7 @@ class Device(object):
 
     def disconnect(self):
         """Disconnect the device."""
-        logger.debug("Disconnecting: {}".format(self))
+        self.chain.connection.log("Disconnecting: {}".format(self))
         if self.connected:
             if self.protocol:
                 if self.is_console:
@@ -224,21 +221,21 @@ class Device(object):
         if self.connected:
             output = ''
             if password:
-                logger.debug("Sending password")
+                self.chain.connection.log("Sending password")
             else:
-                logger.debug("Sending command: '{}'".format(cmd))
+                self.chain.connection.log("Sending command: '{}'".format(cmd))
 
             try:
                 output = self.execute_command(cmd, timeout, wait_for_string, password)
             except ConnectionError:
-                logger.error("Connection lost. Disconnecting.")
+                self.chain.connection.log("Connection lost. Disconnecting.")
                 # self.disconnect()
                 raise
 
             if password:
-                logger.info("Password sent successfully")
+                self.chain.connection.log("Password sent successfully")
             else:
-                logger.info("Command executed successfully: '{}'".format(cmd))
+                self.chain.connection.log("Command executed successfully: '{}'".format(cmd))
 
             return output
 
@@ -254,7 +251,7 @@ class Device(object):
                 wait_for_string = self.prompt_re
 
             if not self.driver.wait_for_string(wait_for_string, timeout):
-                logger.error("Unexpected session disconnect during '{}' "
+                self.chain.connection.log("Unexpected session disconnect during '{}' "
                              "command execution".format(cmd))
                 raise ConnectionError("Unexpected session disconnect", host=self.hostname)
 
@@ -269,25 +266,25 @@ class Device(object):
             return output
 
         except CommandSyntaxError as e:  # pylint: disable=invalid-name
-            logger.error("{}: '{}'".format(e.message, cmd))
+            self.chain.connection.log("{}: '{}'".format(e.message, cmd))
             e.command = cmd
             # TODO: Verify why lint raises an issue
             raise e  # pylint: disable=raising-bad-type
 
         except (CommandTimeoutError, pexpect.TIMEOUT):
-            logger.error("Command timeout: '{}'".format(cmd))
+            self.chain.connection.log("Command timeout: '{}'".format(cmd))
             raise CommandTimeoutError(message="Command timeout", host=self.hostname, command=cmd)
 
         except ConnectionError as e:  # pylint: disable=invalid-name
-            logger.error("{}: '{}'".format(e.message, cmd))
+            self.chain.connection.log("{}: '{}'".format(e.message, cmd))
             raise
 
         except pexpect.EOF:
-            logger.error("Unexpected session disconnect")
+            self.chain.connection.log("Unexpected session disconnect")
             raise ConnectionError("Unexpected session disconnect", host=self.hostname)
 
         except Exception as e:  # pylint: disable=invalid-name
-            logger.critical("Exception", exc_info=True)
+            self.chain.connection.log("Exception", exc_info=True)
             raise ConnectionError(message="Unexpected error", host=self.hostname)
 
     @property
@@ -298,14 +295,14 @@ class Device(object):
     @driver_name.setter
     def driver_name(self, driver_name):
         if driver_name is None:
-            logger.error("New driver cannot be None")
+            self.chain.connection.log("New driver cannot be None")
             return
         if self.driver is None or driver_name != self.driver.platform:
-            logger.debug('Driver change {} -> {}'.format(self.driver.platform, driver_name))
+            self.chain.connection.log('Driver change {} -> {}'.format(self.driver.platform, driver_name))
             self.driver = self.make_driver(driver_name)
             self.make_dynamic_prompt(self.prompt)
         else:
-            logger.debug('Driver {}'.format(driver_name))
+            self.chain.connection.log('Driver {}'.format(driver_name))
 
     def make_driver(self, driver_name='generic'):
         """Make driver factory function."""
@@ -315,11 +312,11 @@ class Device(object):
             module = sys.modules[module_str]
             driver_class = getattr(module, 'Driver')
         except ImportError as e:  # pylint: disable=invalid-name
-            logger.critical("Import error", exc_info=e)
+            self.chain.connection.log("Import error", exc_info=e)
             return self.make_driver()
             # raise GeneralError("Platform {} not supported".format(driver_name))
 
-        logger.debug("Make Device: {} with Driver: {}".format(self, driver_class.platform))
+            self.chain.connection.log("Make Device: {} with Driver: {}".format(self, driver_class.platform))
         return driver_class(self)
 
     def get_previous_prompts(self):
@@ -330,12 +327,12 @@ class Device(object):
     def version_text(self):
         """Return version text and collect if not available."""
         if self._version_text is None:
-            logger.debug("Collecting version information")
+            self.chain.connection.log("Collecting version information")
             self._version_text = self.driver.get_version_text()
             if self._version_text:
-                logger.debug("Version info collected")
+                self.chain.connection.log("Version info collected")
             else:
-                logger.warn("Version info not collected")
+                self.chain.connection.log("Version info not collected")
 
         return self._version_text
 
@@ -343,36 +340,36 @@ class Device(object):
     def hostname_text(self):
         """Return hostname text and collect if not available."""
         if self._hostname_text is None:
-            logger.debug("Collecting hostname information")
+            self.chain.connection.log("Collecting hostname information")
             self._hostname_text = self.driver.get_hostname_text()
             if self._hostname_text:
-                logger.debug("Hostname info collected")
+                self.chain.connection.log("Hostname info collected")
             else:
-                logger.warn("Hostname info not collected")
+                self.chain.connection.log("Hostname info not collected")
         return self._hostname_text
 
     @property
     def inventory_text(self):
         """Return inventory information and collect if not available."""
         if self._inventory_text is None:
-            logger.debug("Collecting inventory information")
+            self.chain.connection.log("Collecting inventory information")
             self._inventory_text = self.driver.get_inventory_text()
             if self._inventory_text:
-                logger.debug("Inventory info collected")
+                self.chain.connection.log("Inventory info collected")
             else:
-                logger.warn("Inventory info not collected")
+                self.chain.connection.log("Inventory info not collected")
         return self._inventory_text
 
     @property
     def users_text(self):
         """Return connected users information and collect if not available."""
         if self._users_text is None:
-            logger.debug("Getting connected users text")
+            self.chain.connection.log("Getting connected users text")
             self._users_text = self.driver.get_users_text()
             if self._users_text:
-                logger.debug("Users text collected")
+                self.chain.connection.log("Users text collected")
             else:
-                logger.warn("Users text not collected")
+                self.chain.connection.log("Users text not collected")
         return self._users_text
 
     def get_protocol_name(self):
@@ -389,7 +386,7 @@ class Device(object):
 
     def update_udi(self):
         """Update udi."""
-        logger.debug("Parsing inventory")
+        self.chain.connection.log("Parsing inventory")
         # TODO: Maybe validate if udi is complete
         self.udi = parse_inventory(self.inventory_text)
 
@@ -408,11 +405,11 @@ class Device(object):
     def update_driver(self, prompt):
         """Update driver based on new prompt."""
         prompt = prompt.lstrip()
-        logger.debug("({}): Prompt: '{}'".format(self.driver.platform, prompt))
+        self.chain.connection.log("({}): Prompt: '{}'".format(self.driver.platform, prompt))
         self.prompt = prompt
         driver_name = self.driver.update_driver(prompt)
         if driver_name is None:
-            logger.error("New driver not detected. Using existing {} driver.".format(self.driver.platform))
+            lself.chain.connection.log("New driver not detected. Using existing {} driver.".format(self.driver.platform))
             return
         self.driver_name = driver_name
 
@@ -425,28 +422,28 @@ class Device(object):
         """Update os_type attribute."""
         os_type = self.driver.get_os_type(self.version_text)
         if os_type:
-            logger.debug("SW Type: {}".format(os_type))
+            self.chain.connection.log("SW Type: {}".format(os_type))
             self.os_type = os_type
 
     def update_os_version(self):
         """Update os_version attribute."""
         os_version = self.driver.get_os_version(self.version_text)
         if os_version:
-            logger.debug("SW Version: {}".format(os_version))
+            self.chain.connection.log("SW Version: {}".format(os_version))
             self.os_version = os_version
 
     def update_family(self):
         """Update family attribute."""
         family = self.driver.get_hw_family(self.version_text)
         if family:
-            logger.debug("HW Family: {}".format(family))
+            self.chain.connection.log("HW Family: {}".format(family))
             self.family = family
 
     def update_platform(self):
         """Update platform attribute."""
         platform = self.driver.get_hw_platform(self.udi)
         if platform:
-            logger.debug("HW Platform: {}".format(platform))
+            self.chain.connection.log("HW Platform: {}".format(platform))
             self.platform = platform
 
     def update_console(self):

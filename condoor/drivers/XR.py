@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import time
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError, \
@@ -13,7 +12,6 @@ from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_sen
     a_configuration_inconsistency
 from condoor.config import CONF
 
-logger = logging.getLogger(__name__)
 
 _C = CONF['driver']['XR']
 

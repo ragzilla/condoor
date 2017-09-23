@@ -1,12 +1,9 @@
 """This is jumphost driver class implementation."""
 
 import re
-import logging
 
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager, CommandError
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(Generic):
@@ -53,5 +50,5 @@ class Driver(Generic):
         except re.error as e:  # pylint: disable=invalid-name
             raise RuntimeError("Pattern compile error: {} ({}:{})".format(e.message, self.platform, patterns_re))
 
-        logger.debug("Dynamic prompt: '{}'".format(repr(prompt_re.pattern)))
+        self.log("Dynamic prompt: '{}'".format(repr(prompt_re.pattern)))
         return prompt_re

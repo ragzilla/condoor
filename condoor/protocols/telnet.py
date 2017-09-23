@@ -14,8 +14,6 @@ from condoor.actions import a_send, a_send_password, a_authentication_error, a_u
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
 from condoor.config import CONF
 
-logger = logging.getLogger(__name__)
-
 
 # Telnet connection initiated
 ESCAPE_CHAR = "Escape character is|Open"
@@ -66,7 +64,7 @@ class Telnet(Protocol):
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
 
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         # setting max_transitions to large number to swallow prompt like strings from prompt
         fsm = FSM("TELNET-CONNECT", self.device, events, transitions, timeout=_C['connect_timeout'],
                   init_pattern=self.last_pattern, max_transitions=500)
@@ -94,7 +92,7 @@ class Telnet(Protocol):
             (pexpect.TIMEOUT, [3, 7], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
             (driver.unable_to_connect_re, [0, 1, 2], -1, a_unable_to_connect, 0),
         ]
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("TELNET-AUTH", self.device, events, transitions, timeout=_C['connect_timeout'],
                   init_pattern=self.last_pattern)
         return fsm.run()
@@ -103,11 +101,11 @@ class Telnet(Protocol):
         """Disconnect using protocol specific method."""
         # self.device.ctrl.sendcontrol(']')
         # self.device.ctrl.sendline('quit')
-        logger.debug("TELNET disconnect")
+        self.log("TELNET disconnect")
         try:
             self.device.ctrl.send(chr(4))
         except OSError:
-            logger.debug("Protocol already disconnected")
+            self.log("Protocol already disconnected")
 
 
 class TelnetConsole(Telnet):
@@ -141,23 +139,23 @@ class TelnetConsole(Telnet):
             (pexpect.TIMEOUT, [0, 1], 5, partial(a_send, "\r\n"), 10),
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("TELNET-CONNECT-CONSOLE", self.device, events, transitions, timeout=_C['connect_timeout'],
                   init_pattern=self.last_pattern)
         return fsm.run()
 
     def disconnect(self, driver):
         """Disconnect from the console."""
-        logger.debug("TELNETCONSOLE disconnect")
+        self.log("TELNETCONSOLE disconnect")
         try:
             while self.device.mode != 'global':
                 self.device.send('exit', timeout=10)
         except OSError:
-            logger.debug("TELNETCONSOLE already disconnected")
+            self.log("TELNETCONSOLE already disconnected")
         except pexpect.TIMEOUT:
-            logger.debug("ELNETCONSOLE unable to get the root prompt")
+            self.log("ELNETCONSOLE unable to get the root prompt")
 
         try:
             self.device.ctrl.send(chr(4))
         except OSError:
-            logger.debug("TELNETCONSOLE already disconnected")
+            self.log("TELNETCONSOLE already disconnected")

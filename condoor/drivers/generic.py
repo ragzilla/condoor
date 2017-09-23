@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import pexpect
 
 from condoor.actions import a_send, a_connection_closed, a_stays_connected, a_unexpected_prompt, a_expected_prompt
@@ -12,8 +11,6 @@ from condoor.utils import pattern_to_str
 
 from condoor import pattern_manager
 from condoor.config import CONF
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(object):
@@ -55,6 +52,8 @@ class Driver(object):
 
         self.plane = 'sdr'
 
+        self.log = device.chain.connection.log
+
     def __repr__(self):
         """Return the string representation of the driver class."""
         return str(self.platform)
@@ -74,11 +73,11 @@ class Driver(object):
         if self.inventory_cmd:
             try:
                 inventory_text = self.device.send(self.inventory_cmd, timeout=120)
-                logger.debug('Inventory collected')
+                self.log('Inventory collected')
             except CommandError:
-                logger.debug('Unable to collect inventory')
+                self.log('Unable to collect inventory')
         else:
-            logger.debug('No inventory command for {}'.format(self.platform))
+            self.log('No inventory command for {}'.format(self.platform))
         return inventory_text
 
     def get_hostname_text(self):  # pylint: disable=no-self-use
@@ -92,9 +91,9 @@ class Driver(object):
             try:
                 users_text = self.device.send(self.users_cmd, timeout=60)
             except CommandError:
-                logger.debug('Unable to collect connected users information')
+                self.log('Unable to collect connected users information')
         else:
-            logger.debug('No users command for {}'.format(self.platform))
+            self.log('No users command for {}'.format(self.platform))
         return users_text
 
     def get_os_type(self, version_text):  # pylint: disable=no-self-use
@@ -137,7 +136,7 @@ class Driver(object):
 
         match = re.search(self.platform_re, version_text, re.MULTILINE)
         if match:
-            logger.debug("Platform string: {}".format(match.group()))
+            self.log("Platform string: {}".format(match.group()))
             family = match.group(1)
             # sort keys on len reversed (longest first)
             for key in sorted(self.families, key=len, reverse=True):
@@ -145,9 +144,9 @@ class Driver(object):
                     family = self.families[key]
                     break
             else:
-                logger.error("Platform {} not supported".format(family))
+                self.log("Platform {} not supported".format(family))
         else:
-            logger.debug("Platform string not present. Refer to CSCux08958")
+            self.log("Platform string not present. Refer to CSCux08958")
         return family
 
     def get_hw_platform(self, udi):
@@ -165,22 +164,22 @@ class Driver(object):
     def is_console(self, users_text):
         """Return if device is connected over console."""
         if users_text is None:
-            logger.debug("Console information not collected")
+            self.log("Console information not collected")
             return None
 
         for line in users_text.split('\n'):
             if '*' in line:
                 match = re.search(self.vty_re, line)
                 if match:
-                    logger.debug("Detected connection to vty")
+                    self.log("Detected connection to vty")
                     return False
                 else:
                     match = re.search(self.console_re, line)
                     if match:
-                        logger.debug("Detected connection to console")
+                        self.log("Detected connection to console")
                         return True
 
-        logger.debug("Connection port unknown")
+        self.log("Connection port unknown")
         return None
 
     def update_driver(self, prompt):
@@ -198,7 +197,7 @@ class Driver(object):
         # add detected prompts chain
         events += self.device.get_previous_prompts()  # without target prompt
 
-        logger.debug("Expecting: {}".format(pattern_to_str(expected_string)))
+        self.log("Expecting: {}".format(pattern_to_str(expected_string)))
 
         transitions = [
             (self.syntax_error_re, [0], -1, CommandSyntaxError("Command unknown", self.device.hostname), 0),
@@ -262,14 +261,14 @@ class Driver(object):
             enable_password (str): The privileged mode password. This is optional parameter. If password is not
                 provided but required the password from url will be used. Refer to :class:`condoor.Connection`
         """
-        logger.info("Privileged mode not supported on {} platform".format(self.platform))
+        self.log("Privileged mode not supported on {} platform".format(self.platform))
 
     def reload(self, reload_timeout=300, save_config=True):
         """Reload the device and waits for device to boot up.
 
         It posts the informational message to the log if not implemented by device driver.
         """
-        logger.info("Reload not implemented on {} platform".format(self.platform))
+        self.log("Reload not implemented on {} platform".format(self.platform))
 
     def after_connect(self):
         """Execute right after connecting to the device."""
@@ -286,10 +285,10 @@ class Driver(object):
         result = re.search(pattern, prompt)
         if result:
             base = result.group("prompt") + "#"
-            logger.debug("base prompt: {}".format(base))
+            self.log("base prompt: {}".format(base))
             return base
         else:
-            logger.error("Unable to extract the base prompt")
+            self.log("Unable to extract the base prompt")
             return prompt
 
     def make_dynamic_prompt(self, prompt):
@@ -306,7 +305,7 @@ class Driver(object):
         except re.error as e:  # pylint: disable=invalid-name
             raise RuntimeError("Pattern compile error: {} ({}:{})".format(e.message, self.platform, patterns_re))
 
-        logger.debug("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, repr(prompt_re.pattern)))
+        self.log("Platform: {} -> Dynamic prompt: '{}'".format(self.platform, repr(prompt_re.pattern)))
         return prompt_re
 
     def update_config_mode(self, prompt):  # pylint: disable=no-self-use
@@ -318,7 +317,7 @@ class Driver(object):
         else:
             mode = 'global'
 
-        logger.debug("Mode: {}".format(mode))
+        self.log("Mode: {}".format(mode))
         return mode
 
     def update_hostname(self, prompt):
@@ -326,20 +325,20 @@ class Driver(object):
         result = re.search(self.prompt_re, prompt)
         if result:
             hostname = result.group('hostname')
-            logger.debug("Hostname detected: {}".format(hostname))
+            self.log("Hostname detected: {}".format(hostname))
         else:
             hostname = self.device.hostname
-            logger.debug("Hostname not set: {}".format(prompt))
+            self.log("Hostname not set: {}".format(prompt))
         return hostname
 
     def config(self, text, plane):
         """Apply config."""
-        logger.warning("Device configuration not supported.")
+        self.log("Device configuration not supported.")
         return None
 
     def rollback(self, label, plane):
         """Rollback config."""
-        logger.warning("Device configuration rollback not supported.")
+        self.log("Device configuration rollback not supported.")
         return None
 
     def enter_plane(self, plane):
@@ -354,7 +353,7 @@ class Driver(object):
             cmd = None
 
         if cmd:
-            logger.info("Entering the {} plane".format(plane))
+            self.log("Entering the {} plane".format(plane))
             self.device.send(cmd)
 
     def exit_plane(self):

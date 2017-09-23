@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import pexpect
 
 from condoor.exceptions import CommandSyntaxError, CommandTimeoutError, ConnectionError, ConnectionAuthenticationError
@@ -13,8 +12,6 @@ from condoor.fsm import FSM
 from condoor.drivers.XR import Driver as XRDriver
 from condoor import pattern_manager, EOF
 from condoor.config import CONF
-
-logger = logging.getLogger(__name__)
 
 _C = CONF['driver']['eXR']
 
@@ -71,8 +68,8 @@ class Driver(XRDriver):
         # add detected prompts chain
         events += self.device.get_previous_prompts()  # without target prompt
 
-        logger.debug("Expecting: {}".format(pattern_to_str(expected_string)))
-        logger.debug("Calvados prompt: {}".format(pattern_to_str(self.calvados_re)))
+        self.log("Expecting: {}".format(pattern_to_str(expected_string)))
+        self.log("Calvados prompt: {}".format(pattern_to_str(self.calvados_re)))
 
         transitions = [
             (self.syntax_error_re, [0], -1, CommandSyntaxError("Command unknown", self.device.hostname), 0),

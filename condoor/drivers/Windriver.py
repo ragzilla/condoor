@@ -1,10 +1,7 @@
 """This is a Wind River Linux driver implementation."""
 
-import logging
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(Generic):
