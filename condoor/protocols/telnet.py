@@ -60,8 +60,8 @@ class Telnet(Protocol):
             (self.device.prompt_re, [0, 1, 5], 0, None, 10),
             (self.device.prompt_re, [6, 8, 5], -1, partial(a_save_last_pattern, self), 0),
             (driver.rommon_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
-            (driver.unable_to_connect_re, [0, 1], -1, a_unable_to_connect, 0),
-            (driver.timeout_re, [0, 1], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
+            (driver.unable_to_connect_re, [0, 1, 5], -1, a_unable_to_connect, 0),
+            (driver.timeout_re, [0, 1, 5], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
             (pexpect.TIMEOUT, [0, 1], 5, partial(a_send, "\r\n"), 10),
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
