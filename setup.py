@@ -31,15 +31,17 @@
  Installation script for accelerated upgrade
 """
 import codecs
+import re
+import sys
+
+from setuptools.command.test import test as TestCommand
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-from setuptools.command.test import test as TestCommand
-import sys
 
-import re
 
 DESCRIPTION = 'This is a python module providing access to Cisco devices over Telnet and SSH'
 with codecs.open('README.md', 'r', encoding='UTF-8') as readme:
