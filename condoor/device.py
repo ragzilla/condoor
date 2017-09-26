@@ -251,8 +251,7 @@ class Device(object):
                 wait_for_string = self.prompt_re
 
             if not self.driver.wait_for_string(wait_for_string, timeout):
-                self.chain.connection.log("Unexpected session disconnect during '{}' "
-                             "command execution".format(cmd))
+                self.chain.connection.log("Unexpected session disconnect during '{}' command execution".format(cmd))
                 raise ConnectionError("Unexpected session disconnect", host=self.hostname)
 
             if self.last_command_result:
@@ -284,7 +283,7 @@ class Device(object):
             raise ConnectionError("Unexpected session disconnect", host=self.hostname)
 
         except Exception as e:  # pylint: disable=invalid-name
-            self.chain.connection.log("Exception", exc_info=True)
+            self.chain.connection.log("Exception {}".format(e))
             raise ConnectionError(message="Unexpected error", host=self.hostname)
 
     @property
@@ -409,7 +408,7 @@ class Device(object):
         self.prompt = prompt
         driver_name = self.driver.update_driver(prompt)
         if driver_name is None:
-            lself.chain.connection.log("New driver not detected. Using existing {} driver.".format(self.driver.platform))
+            self.chain.connection.log("New driver not detected. Using existing {} driver.".format(self.driver.platform))
             return
         self.driver_name = driver_name
 
