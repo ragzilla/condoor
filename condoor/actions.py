@@ -75,6 +75,7 @@ def a_unable_to_connect(ctx):
 def a_standby_console(ctx):
     """Raise ConnectionError exception when connected to standby console."""
     ctx.device.is_console = True
+    ctx.ctrl.disconnect()
     raise ConnectionError("Standby console", ctx.ctrl.hostname)
 
 
