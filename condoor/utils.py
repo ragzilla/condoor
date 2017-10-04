@@ -1,6 +1,5 @@
 """Provides a set of functions nad clases for different purpose."""
 
-import logging
 from logging.handlers import WatchedFileHandler
 import socket
 import codecs
