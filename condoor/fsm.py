@@ -18,6 +18,12 @@ def action(func):
             ctx = kwargs['ctx']
         except KeyError:
             ctx = None
+
+        if ctx is None:
+            try:
+                ctx = args[-1]
+            except IndexError:
+                ctx = None
         if ctx:
             if func.__doc__ is None:
                 ctx.device.chain.connection.log("A={}".format(func.__name__))
@@ -179,7 +185,7 @@ class FSM(object):
                     next_state, action_instance, next_timeout = transition
                     self.log("E={},S={},T={},RT={:.2f}".format(ctx.event, ctx.state, timeout, finish_time))
                     if callable(action_instance) and not isclass(action_instance):
-                        if not action_instance(ctx=ctx):
+                        if not action_instance(ctx):
                             self.log("Error: {}".format(ctx.msg))
                             return False
                     elif isinstance(action_instance, Exception):
