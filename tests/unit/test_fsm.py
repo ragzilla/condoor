@@ -49,12 +49,21 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
         device.counter = 0
+        device.chain.connection.log.return_value = None
 
         @action
         def action1(ctx):
@@ -89,8 +98,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
@@ -134,8 +151,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
@@ -162,8 +187,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
@@ -192,8 +225,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
@@ -223,8 +264,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0
@@ -257,8 +306,16 @@ class TestFSM(TestCase):
             def expect(self, events, searchwindowsize, timeout):
                 pass
 
+        class Connection(object):
+            def log(self, msg):
+                print(msg)
+
+        class Chain(object):
+            connection = Mock(spec=Connection)
+
         class Device(object):
             ctrl = Mock(spec=Ctrl)
+            chain = Mock(spec=Chain)
 
         device = Mock(spec=Device)
         device.ctrl.expect.return_value = 0

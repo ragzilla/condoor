@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import time
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager, TIMEOUT, EOF, ConnectionAuthenticationError, ConnectionError, \
@@ -13,7 +12,6 @@ from condoor.actions import a_reload_na, a_send, a_send_boot, a_reconnect, a_sen
     a_configuration_inconsistency
 from condoor.config import CONF
 
-logger = logging.getLogger(__name__)
 
 _C = CONF['driver']['XR']
 
@@ -75,25 +73,29 @@ class Driver(Generic):
 
         transitions = [
             (RELOAD_NA, [0], -1, a_reload_na, 0),
-            (NOT_COMMITTED, [0], -1, a_not_committed, 0),
+            # temp for testing
+            (NOT_COMMITTED, [0], -1, a_not_committed, 10),
             (DONE, [0], 2, None, 120),
             (PROCEED, [2], 3, partial(a_send, "\r"), reload_timeout),
             # this needs to be verified
             (self.rommon_re, [0, 3], 3, partial(a_send_boot, "boot"), 600),
             (CANDIDATE_BOOT_IMAGE, [0, 3], 4, a_message_callback, 600),
             (CONSOLE, [0, 1, 3, 4], 5, None, 600),
+            # This is required. Otherwise nothing more is displayed on the console
             (self.press_return_re, [5], 6, partial(a_send, "\r"), 300),
             # configure root username and password the same as used for device connection.
             (RECONFIGURE_USERNAME_PROMPT, [6, 7, 10], 8, None, 10),
             (ROOT_USERNAME_PROMPT, [8], 9, partial(a_send_username, self.device.node_info.username), 1),
             (ROOT_PASSWORD_PROMPT, [9], 9, partial(a_send_password, self.device.node_info.password), 1),
-            (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 600),
+            (CONFIGURATION_IN_PROCESS, [6, 9], 10, None, 1200),
             (CONFIGURATION_COMPLETED, [10], -1, a_reconnect, 0),
             (self.username_re, [7, 9], -1, a_return_and_reconnect, 0),
             (TIMEOUT, [0, 1, 2], -1, ConnectionAuthenticationError("Unable to reload"), 0),
             (EOF, [0, 1, 2, 3, 4, 5], -1, ConnectionError("Device disconnected"), 0),
             (TIMEOUT, [6], 7, partial(a_send, "\r"), 180),
-            (TIMEOUT, [7, 10], -1, ConnectionAuthenticationError("Unable to reconnect after reloading"), 0),
+            (TIMEOUT, [7], -1, ConnectionAuthenticationError("Unable to reconnect after reloading"), 0),
+            (TIMEOUT, [10], -1, a_reconnect, 0),
+
         ]
 
         fsm = FSM("RELOAD", self.device, events, transitions, timeout=600)

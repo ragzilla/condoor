@@ -1,10 +1,7 @@
 """This is IOS XRv driver implementation."""
 
-import logging
 from condoor.drivers.XR import Driver as eXR
 from condoor import pattern_manager
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(eXR):

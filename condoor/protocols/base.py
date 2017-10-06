@@ -17,6 +17,7 @@ class Protocol(object):
 
         self.last_pattern = None
         self.matched_string = None
+        self.log = device.chain.connection.log
 
     def connect(self, driver):
         """Connect using specific protocol."""

@@ -1,7 +1,6 @@
 """Provides SSH driver class."""
 
 from functools import partial
-import logging
 import pexpect
 
 from condoor.fsm import FSM, action
@@ -12,8 +11,6 @@ from condoor.actions import a_send_password, a_authentication_error, a_send, a_u
 
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
 from condoor.config import CONF
-
-logger = logging.getLogger(__name__)
 
 
 MODULUS_TOO_SMALL = "modulus too small"
@@ -79,7 +76,7 @@ class SSH(Protocol):
             (driver.timeout_re, [0], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0),
         ]
 
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("SSH-CONNECT", self.device, events, transitions, timeout=_C['connect_timeout'],
                   searchwindowsize=160)
         return fsm.run()
@@ -99,18 +96,18 @@ class SSH(Protocol):
              ConnectionError("Error getting device prompt") if self.device.is_target else partial(a_send, "\r\n"), 0)
         ]
 
-        logger.debug("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
+        self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("SSH-AUTH", self.device, events, transitions, init_pattern=self.last_pattern, timeout=30)
         return fsm.run()
 
     def disconnect(self, driver):
         """Disconnect using the protocol specific method."""
-        logger.debug("SSH disconnect")
+        self.log("SSH disconnect")
         try:
             self.device.ctrl.sendline('\x03')
             self.device.ctrl.sendline('\x04')
         except OSError:
-            logger.debug("Protocol already disconnected")
+            self.log("Protocol already disconnected")
 
     # FIXME: This needs to be fixed and tested
     @action

@@ -1,11 +1,8 @@
 """This is a Calvados driver implementation."""
 
 import re
-import logging
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager
-
-logger = logging.getLogger(__name__)
 
 
 class Driver(Generic):
@@ -46,7 +43,7 @@ class Driver(Generic):
         show_users = self.device.send("show users", timeout=120)
         result = re.search(pattern_manager.pattern(self.platform, 'connected_locally'), show_users)
         if result:
-            logger.debug('Locally connected to Calvados. Exiting.')
+            self.log('Locally connected to Calvados. Exiting.')
             self.device.send('exit')
             return True
         return False

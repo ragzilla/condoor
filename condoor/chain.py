@@ -8,8 +8,6 @@ from condoor.controller import Controller
 from condoor.protocols import make_protocol
 from condoor.exceptions import ConnectionError
 
-logger = logging.getLogger(__name__)
-
 
 def device_gen(chain, urls):
     """Device object generator."""
@@ -59,7 +57,7 @@ class Chain(object):
                     else:
                         message = "Connection error"
 
-                    logger.error(message)
+                    self.connection.log(message)
                     raise ConnectionError(message)  # , host=str(device))
 
         if device is None:
@@ -121,7 +119,7 @@ class Chain(object):
         for device in self.devices:
             conn_info += str(device) + "->"
             if device.prompt == prompt:
-                logger.debug("Connected: {}".format(conn_info))
+                self.connection.log("Connected: {}".format(conn_info))
                 return self.devices.index(device)
         else:
             return None
@@ -146,4 +144,4 @@ class Chain(object):
         else:
             for device, device_info in zip(self.devices, data):
                 device.device_info = device_info
-                logger.debug("Device information updated -> [{}]".format(device))
+                self.connection.log("Device information updated -> [{}]".format(device))
