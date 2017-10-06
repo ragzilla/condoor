@@ -1,6 +1,7 @@
 """Provides the main Connection class."""
 import re
 import os
+import sys
 import time
 import shelve
 import logging
@@ -86,8 +87,10 @@ class Connection(object):
 
         self.log_session = log_session
         self.session_fd = None
+        self._external_session_fd = True
 
         self._trace_fd = None
+        self._external_trace_fd = True
 
         self.log = None
 
@@ -104,16 +107,8 @@ class Connection(object):
         After calling this method the object can't be used anymore.
         This will be reworked when changing the logging model.
         """
-        if self.session_fd:
-            self.session_fd.flush()
-            self.session_fd.close()
-            self.session_fd = None
-
-        if self._trace_fd:
-            self._trace_fd.flush()
-            self._trace_fd.close()
-            self._trace_fd = None
-
+        self.pause_session_logging()
+        self._disable_logging()
         self._msg_callback = None
         self._error_msg_callback = None
         self._warning_msg_callback = None
@@ -125,14 +120,13 @@ class Connection(object):
             try:
                 # FIXME: take pattern from pattern manager
                 session_fd = FilteredFile(os.path.join(self._log_dir, 'session.log'),
-                                          mode="w", pattern=re.compile("s?ftp://.*:(.*)@"))
+                                          mode="a", pattern=re.compile("s?ftp://.*:(.*)@"))
             except IOError:
                 print("Unable to create session log file")
 
         else:
             if self.log_session:
-                import sys
-                session_fd = sys.stderr
+                session_fd = sys.stdout
 
         return session_fd
 
@@ -140,13 +134,53 @@ class Connection(object):
         trace_fd = None
         if self._log_dir is not None:
             try:
-                trace_fd = open(os.path.join(self._log_dir, 'trace.log'), "w+")
+                trace_fd = open(os.path.join(self._log_dir, 'condoor.log'), "a")
             except IOError:
                 print("Unable to create log file")
         else:
-            import sys
             trace_fd = sys.stderr
         return trace_fd
+
+    def _enable_logging(self, logfile, tracefile):
+        if self.session_fd is None:
+            if self.log_session:
+                if logfile:
+                    self.session_fd = logfile
+                    self._external_session_fd = True
+                else:
+                    self.session_fd = self._make_session_fd()
+                    self._external_session_fd = False
+            else:
+                self.session_fd = None
+
+        if self._trace_fd is None:
+            if tracefile:
+                self._trace_fd = tracefile
+                self._external_trace_fd = True
+            else:
+                self._trace_fd = self._make_trace_fd()
+                self._external_trace_fd = False
+
+        self.log = FileLogger(self._trace_fd)
+
+    def _disable_logging(self):
+        if self._trace_fd:
+            self.log("Closing logs")
+        if not self._external_trace_fd and self._trace_fd:
+            if not self._trace_fd.closed:
+                self._trace_fd.flush()
+                # do not close if stderr
+                if self._trace_fd is not sys.stderr:
+                    self._trace_fd.close()
+            self._trace_fd = None
+
+        if not self._external_session_fd and self._trace_fd:
+            if not self.session_fd.closed:
+                self.session_fd.flush()
+                # do not close if stdout
+                if self.session_fd is not sys.stdout:
+                    self.session_fd.close()
+            self.session_fd = None
 
     def _get_key(self):
         key = md5()
@@ -184,6 +218,7 @@ class Connection(object):
 
     def _clear_cache(self):
         # key = self._get_key()
+        self.log("Clearing connection cache")
         self._read_cache()
         self.description_record = None
         self.log("Description record: {}".format(self.description_record))
@@ -214,51 +249,12 @@ class Connection(object):
             ConnectionTimeoutError: If the connection timeout happened.
 
         """
-        self.reconnect(logfile=logfile, force_discovery=force_discovery, max_timeout=120)
+        self.reconnect(logfile=logfile, max_timeout=120, force_discovery=force_discovery, tracefile=tracefile,
+                       retry=False)
+
         return
 
-
-
-        self.log("-" * 20)
-        self.log("Connecting")
-
-        if logfile:
-            self.session_fd = logfile
-
-        self._clear_cache() if force_discovery else self._read_cache()
-
-        excpt = ConnectionError("Could not connect to the device.")
-
-        chains = len(self.connection_chains)
-        for index, chain in enumerate(self.connection_chains, start=1):
-            self.emit_message("Connection chain {}/{}: {}".format(index, chains, str(chain)), log_level=logging.INFO)
-
-        begin = time.time()
-        attempt = 1
-        for index in self._chain_indices():
-            self.emit_message("Connection chain/attempt [{}/{}]".format(index + 1, attempt), log_level=logging.INFO)
-
-            chain = self.connection_chains[index]
-            self._last_chain_index = index
-            try:
-                if chain.connect():
-                    break
-            except (ConnectionTimeoutError, ConnectionError) as e:  # pylint: disable=invalid-name
-                self.emit_message("Connection error: {}".format(e), log_level=logging.ERROR)
-                excpt = e
-
-            attempt += 1
-        else:
-            # invalidate cache
-            raise excpt
-
-        self._write_cache()
-        elapsed = time.time() - begin
-        self.emit_message("Target device connected in {:.2f}s.".format(elapsed), log_level=logging.INFO)
-        self.log("Connected")
-        self.log("-" * 20)
-
-    def reconnect(self, logfile=None, max_timeout=360, force_discovery=False, tracefile=None):
+    def reconnect(self, logfile=None, max_timeout=360, force_discovery=False, tracefile=None, retry=True):
         """Reconnect to the device.
 
         It can be called when after device reloads or the session was
@@ -268,12 +264,18 @@ class Connection(object):
         Args:
             logfile (file): Optional file descriptor for session logging. The file must be open for write.
                 The session is logged only if ``log_session=True`` was passed to the constructor.
-                It the parameter is not passed then the default *session.log* file is created in `log_dir`.
+                It the parameter is None the default *session.log* file is created in `log_dir`.
 
             max_timeout (int): This is the maximum amount of time during the session tries to reconnect. It may take
                 longer depending on the TELNET or SSH default timeout.
 
             force_discovery (Bool): Optional. If True the device discover process will start after getting connected.
+
+            tracefile (file): Optional file descriptor for condoor logging. The file must be open for write.
+                It the parameter is None the default *condoor.log* file is created in `log_dir`.
+
+            retry (bool): Optional parameter causing the connnection to retry until timeout
+
 
         Raises:
             ConnectionError: If the discovery method was not called first or there was a problem with getting
@@ -284,25 +286,10 @@ class Connection(object):
             ConnectionTimeoutError: If the connection timeout happened.
 
         """
-
-        if self.log_session:
-            if logfile:
-                self.session_fd = logfile
-            else:
-                self.session_fd = self._make_session_fd()
-        else:
-            self.session_fd = None
-
-        if tracefile:
-            self._trace_fd = tracefile
-        else:
-            self._trace_fd = self._make_trace_fd()
-
-        self.log = FileLogger(self._trace_fd)
+        self._enable_logging(logfile, tracefile)
 
         self.log("-" * 20)
         self.log("Condoor Version {}".format(__version__))
-        # top_logger.debug("Cache filename: {}".format(_CACHE_FILE))
         self.log("Cache filename: {}".format(_CACHE_FILE))
 
         self.connection_chains = [Chain(self, url_list) for url_list in normalize_urls(self._urls)]
@@ -324,6 +311,10 @@ class Connection(object):
         elapsed = 0
 
         while max_timeout - elapsed > 0:
+            # there is no reason to wait for another chain.
+            if (attempt - 1) % len(self.connection_chains) != 0:
+                sleep_time = 2
+
             if sleep_time > 0:
                 self.emit_message("Waiting {:.0f}s before next connection attempt".format(sleep_time), log_level=logging.INFO)
                 time.sleep(sleep_time)
@@ -346,7 +337,10 @@ class Connection(object):
                             chain.disconnect()
                         else:
                             index = chain.get_device_index_based_on_prompt(prompt)
-                            chain.tail_disconnect(index)
+                            if index is not None:
+                                chain.tail_disconnect(index)
+                            else:
+                                chain.disconnect()
                 except ConnectionTimeoutError as e:
                     excpt = e
 
@@ -360,14 +354,30 @@ class Connection(object):
                 self.emit_message("Time elapsed {:.0f}s/{:.0f}s".format(elapsed, max_timeout), log_level=logging.INFO)
 
             attempt += 1
-            self._clear_cache()
+            if attempt > len(self.connection_chains) and not retry:
+                self.emit_message("Unable to (re)connect within {:.0f}s".format(elapsed), log_level=logging.ERROR)
+                self._clear_cache()
+                self._disable_logging()
+                raise excpt
         else:
             self.emit_message("Unable to (re)connect within {:.0f}s".format(elapsed), log_level=logging.ERROR)
+            self._clear_cache()
+            self._disable_logging()
             raise excpt
 
         self._write_cache()
         self.emit_message("Target device connected in {:.0f}s.".format(elapsed), log_level=logging.INFO)
         self.log("-" * 20)
+
+    def pause_session_logging(self):
+        """Pause session logging."""
+        self._chain.ctrl.set_session_log(None)
+        self.log("Session logging paused")
+
+    def resume_session_logging(self):
+        """Resume session logging."""
+        self._chain.ctrl.set_session_log(self.session_fd)
+        self.log("Session logging resumed")
 
     def send(self, cmd="", timeout=300, wait_for_string=None, password=False):
         """Send the command to the device and return the output.
@@ -444,8 +454,9 @@ class Connection(object):
     def disconnect(self):
         """Disconnect the session from the device and all the jumphosts in the path."""
         self._chain.disconnect()
+        self._disable_logging()
 
-    def discovery(self, logfile=None):
+    def discovery(self, logfile=None, tracefile=None):
         """Discover the device details.
 
         This method discover several device attributes.
@@ -456,9 +467,11 @@ class Connection(object):
                 It the parameter is not passed then the default *session.log* file is created in `log_dir`.
 
         """
-        self.log("'discovery' method is deprecated. Please 'connect' with force_disovery=True.")
+        self._enable_logging(logfile=logfile, tracefile=tracefile)
+
+        self.log("'discovery' method is deprecated. Please 'connect' with force_discovery=True.")
         self.log("Device discovery process started")
-        self.connect(logfile=logfile, force_discovery=True)
+        self.connect(logfile=logfile, force_discovery=True, tracefile=tracefile)
         self.disconnect()
 
     def enable(self, enable_password=None):
@@ -643,7 +656,6 @@ class Connection(object):
             return self.connection_chains[self._last_chain_index]
         except TypeError:
             raise ConnectionError("Device not connected")
-
 
     @property
     def is_connected(self):

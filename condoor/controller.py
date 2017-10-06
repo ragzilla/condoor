@@ -61,8 +61,8 @@ class Controller(object):
                 if cols < 160:
                     self._session.setwinsize(512, 160)
                     nrows, ncols = self._session.getwinsize()
-                    self._connection.log("Terminal window size changed from "
-                                 "{}x{} to {}x{}".format(rows, cols, nrows, ncols))
+                    self._connection.log("Terminal window size changed from {}x{} to {}x{}".format(
+                        rows, cols, nrows, ncols))
                 else:
                     self._connection.log("Terminal window size: {}x{}".format(rows, cols))
 
@@ -71,8 +71,14 @@ class Controller(object):
             except pexpect.TIMEOUT:
                 raise ConnectionTimeoutError("Timeout", self.hostname)
 
-            self._session.logfile_read = self._logfile_fd
+            self.set_session_log(self._logfile_fd)
             self.connected = True
+
+    def set_session_log(self, session_log_fd=None):
+        """Set the fd for session log."""
+        self._connection.log("Setting the session log")
+        if self._session:
+            self._session.logfile_read = session_log_fd
 
     def send_command(self, cmd, password=False):
         """Send command."""

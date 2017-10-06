@@ -1,7 +1,6 @@
 """Provides SSH driver class."""
 
 from functools import partial
-import logging
 import pexpect
 
 from condoor.fsm import FSM, action

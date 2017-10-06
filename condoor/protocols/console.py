@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import pexpect
 
 from condoor.fsm import FSM
