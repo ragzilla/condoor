@@ -310,12 +310,12 @@ class Driver(object):
 
     def update_config_mode(self, prompt):  # pylint: disable=no-self-use
         """Update config mode based on the prompt analysis."""
-        if 'config' in prompt:
-            mode = 'config'
-        elif 'admin' in prompt:
-            mode = 'admin'
-        else:
-            mode = 'global'
+        mode = 'global'
+        if prompt:
+            if 'config' in prompt:
+                mode = 'config'
+            elif 'admin' in prompt:
+                mode = 'admin'
 
         self.log("Mode: {}".format(mode))
         return mode
