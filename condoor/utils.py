@@ -1,6 +1,5 @@
 """Provides a set of functions nad clases for different purpose."""
 
-import logging
 from logging.handlers import WatchedFileHandler
 import socket
 import codecs
@@ -238,33 +237,33 @@ def normalize_urls(urls):
     return _urls
 
 
-def make_handler(log_dir, log_level):
-    """Make logging handler."""
-    if log_level > 0:
-        if log_level == logging.DEBUG:
-            formatter = logging.Formatter('%(asctime)-15s [%(levelname)8s] %(name)s:'
-                                          '%(funcName)s(%(lineno)d): %(message)s')
-        else:
-            formatter = logging.Formatter('%(asctime)-15s [%(levelname)8s]: %(message)s')
-        if log_dir:
-            # Create the log directory.
-            if not os.path.exists(log_dir):
-                try:
-                    os.makedirs(log_dir)
-                except IOError:
-                    log_dir = "./"
-            log_filename = os.path.join(log_dir, 'condoor.log')
-            # FIXME: take pattern from pattern manager
-            handler = FilteredFileHandler(log_filename, pattern=re.compile("s?ftp://.*:(.*)@"))
-
-        else:
-            handler = logging.StreamHandler()
-
-        handler.setFormatter(formatter)
-    else:
-        handler = logging.NullHandler()
-
-    return handler
+# def make_handler(log_dir, log_level):
+#     """Make logging handler."""
+#     if log_level > 0:
+#         if log_level == logging.DEBUG:
+#             formatter = logging.Formatter('%(asctime)-15s [%(levelname)8s] %(name)s:'
+#                                           '%(funcName)s(%(lineno)d): %(message)s')
+#         else:
+#             formatter = logging.Formatter('%(asctime)-15s [%(levelname)8s]: %(message)s')
+#         if log_dir:
+#             # Create the log directory.
+#             if not os.path.exists(log_dir):
+#                 try:
+#                     os.makedirs(log_dir)
+#                 except IOError:
+#                     log_dir = "./"
+#             log_filename = os.path.join(log_dir, 'condoor.log')
+#             # FIXME: take pattern from pattern manager
+#             handler = FilteredFileHandler(log_filename, pattern=re.compile("s?ftp://.*:(.*)@"))
+#
+#         else:
+#             handler = logging.StreamHandler()
+#
+#         handler.setFormatter(formatter)
+#     else:
+#         handler = logging.NullHandler()
+#
+#     return handler
 
 
 def yaml_file_to_dict(script_name, path=None):

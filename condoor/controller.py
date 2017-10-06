@@ -1,14 +1,11 @@
 """Provides the Controller class which is a wrapper to the pyexpect.spawn class."""
 
 import re
-import logging
 import pexpect
 from time import time
 
 from condoor.utils import delegate, levenshtein_distance
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError
-
-logger = logging.getLogger(__name__)
 
 
 # Delegate following methods to _session class
@@ -37,7 +34,7 @@ class Controller(object):
     def spawn_session(self, command):
         """Spawn the session using proper command."""
         if self._session and self.isalive():  # pylint: disable=no-member
-            logger.debug("Executing command: '{}'".format(command))
+            self._connection.log("Executing command: '{}'".format(command))
             try:
                 self.send(command)  # pylint: disable=no-member
                 self.expect_exact(command, timeout=20)  # pylint: disable=no-member
@@ -49,7 +46,7 @@ class Controller(object):
                 raise ConnectionTimeoutError("Timeout", self.hostname)
 
         else:
-            logger.debug("Spawning command: '{}'".format(command))
+            self._connection.log("Spawning command: '{}'".format(command))
             try:
                 self._session = pexpect.spawn(
                     command,
@@ -59,50 +56,56 @@ class Controller(object):
                     echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
-                logger.debug("Child process FD: {}".format(self._session.child_fd))
+                self._connection.log("Child process FD: {}".format(self._session.child_fd))
                 rows, cols = self._session.getwinsize()
                 if cols < 160:
                     self._session.setwinsize(512, 160)
                     nrows, ncols = self._session.getwinsize()
-                    logger.debug("Terminal window size changed from "
-                                 "{}x{} to {}x{}".format(rows, cols, nrows, ncols))
+                    self._connection.log("Terminal window size changed from {}x{} to {}x{}".format(
+                        rows, cols, nrows, ncols))
                 else:
-                    logger.debug("Terminal window size: {}x{}".format(rows, cols))
+                    self._connection.log("Terminal window size: {}x{}".format(rows, cols))
 
             except pexpect.EOF:
                 raise ConnectionError("Connection error", self.hostname)
             except pexpect.TIMEOUT:
                 raise ConnectionTimeoutError("Timeout", self.hostname)
 
-            self._session.logfile_read = self._logfile_fd
+            self.set_session_log(self._logfile_fd)
             self.connected = True
+
+    def set_session_log(self, session_log_fd=None):
+        """Set the fd for session log."""
+        self._connection.log("Setting the session log")
+        if self._session:
+            self._session.logfile_read = session_log_fd
 
     def send_command(self, cmd, password=False):
         """Send command."""
         try:
             if password:
                 timeout = 10
-                logger.debug("Waiting for ECHO OFF")
+                self._connection.log("Waiting for ECHO OFF")
                 if self.waitnoecho(timeout):  # pylint: disable=no-member
-                    logger.debug("Password ECHO OFF received")
+                    self._connection.log("Password ECHO OFF received")
                 else:
-                    logger.debug("Password ECHO OFF not received within {}s".format(timeout))
+                    self._connection.log("Password ECHO OFF not received within {}s".format(timeout))
                 self.sendline(cmd)  # pylint: disable=no-member
             else:
                 self.send(cmd)  # pylint: disable=no-member
                 self.expect_exact([cmd, pexpect.TIMEOUT], timeout=15)  # pylint: disable=no-member
                 self.sendline()  # pylint: disable=no-member
         except OSError:
-            logger.error("Session already disconnected.")
+            self._connection.log("Session already disconnected.")
             raise ConnectionError("Session already disconnected")
 
     def disconnect(self):
         """Disconnect the controller."""
         if self._session and self._session.isalive():
-            logger.debug("Disconnecting the sessions")
+            self._connection.log("Disconnecting the sessions")
             self._session.close(force=True)
             self._session.wait()
-        logger.debug("Disconnected")
+        self._connection.log("Disconnected")
         self.connected = False
 
     def try_read_prompt(self, timeout_multiplier):
@@ -160,7 +163,7 @@ class Controller(object):
         max_attempts = 10
         while attempt < max_attempts:
             attempt += 1
-            logger.debug("Detecting prompt. Attempt ({}/{})".format(attempt, max_attempts))
+            self._connection.log("Detecting prompt. Attempt ({}/{})".format(attempt, max_attempts))
 
             self.sendline()  # pylint: disable=no-member
             first = self.try_read_prompt(sync_multiplier)
@@ -170,14 +173,14 @@ class Controller(object):
 
             lhd = levenshtein_distance(first, second)
             len_first = len(first)
-            logger.debug("LD={},MP={}".format(lhd, sync_multiplier))
+            self._connection.log("LD={},MP={}".format(lhd, sync_multiplier))
             sync_multiplier *= 1.2
             if len_first == 0:
                 continue
 
             if float(lhd) / len_first < 0.3:
                 prompt = second.splitlines(True)[-1]
-                logger.debug("Detected prompt: '{}'".format(prompt))
+                self._connection.log("Detected prompt: '{}'".format(prompt))
                 compiled_prompt = re.compile("(\r\n|\n\r){}".format(re.escape(prompt)))
                 self.sendline()  # pylint: disable=no-member
                 self.expect(compiled_prompt)  # pylint: disable=no-member
