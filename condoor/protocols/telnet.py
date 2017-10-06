@@ -2,7 +2,6 @@
 
 from functools import partial
 import re
-import logging
 import pexpect
 
 from condoor.fsm import FSM
@@ -141,7 +140,7 @@ class TelnetConsole(Telnet):
         ]
         self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
         fsm = FSM("TELNET-CONNECT-CONSOLE", self.device, events, transitions, timeout=_C['connect_timeout'],
-                  init_pattern=self.last_pattern)
+                  init_pattern=None)
         return fsm.run()
 
     def disconnect(self, driver):
@@ -153,7 +152,7 @@ class TelnetConsole(Telnet):
         except OSError:
             self.log("TELNETCONSOLE already disconnected")
         except pexpect.TIMEOUT:
-            self.log("ELNETCONSOLE unable to get the root prompt")
+            self.log("TELNETCONSOLE unable to get the root prompt")
 
         try:
             self.device.ctrl.send(chr(4))
