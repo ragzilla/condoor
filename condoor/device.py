@@ -250,6 +250,10 @@ class Device(object):
             if wait_for_string is None:
                 wait_for_string = self.prompt_re
 
+            # hide cmd in case it's password for further error messages or exceptions.
+            if password:
+                cmd = "*** Password ***"
+
             if not self.driver.wait_for_string(wait_for_string, timeout):
                 self.chain.connection.log("Unexpected session disconnect during '{}' command execution".format(cmd))
                 raise ConnectionError("Unexpected session disconnect", host=self.hostname)
