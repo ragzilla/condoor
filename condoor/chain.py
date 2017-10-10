@@ -110,7 +110,8 @@ class Chain(object):
     def get_previous_prompts(self, device):
         """Return the list of intermediate prompts. All except target."""
         device_index = self.devices.index(device)
-        prompts = [re.compile("(?!x)x")] + [dev.prompt_re for dev in self.devices[:device_index]]
+        prompts = [re.compile("(?!x)x")] + \
+                  [dev.prompt_re for dev in self.devices[:device_index] if dev.prompt_re is not None]
         return prompts
 
     def get_device_index_based_on_prompt(self, prompt):
