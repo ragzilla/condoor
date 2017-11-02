@@ -31,10 +31,19 @@ class Controller(object):
         """Return the hostname."""
         return self._connection.hostname
 
-    def spawn_session(self, command):
+    def spawn_session(self, command, hostname):
         """Spawn the session using proper command."""
         if self._session and self.isalive():  # pylint: disable=no-member
             self._connection.log("Executing command: '{}'".format(command))
+            try:
+                ping_cmd = "ping -o -t2 {} && echo OK".format(hostname)
+                self.send(ping_cmd)
+                self.expect_exact(ping_cmd, timeout=20)
+                self.sendline()
+                self.expect_exact("OK", timeout=3)
+            except pexpect.TIMEOUT:
+                raise ConnectionError("Device {} not reachable.".format(hostname))
+
             try:
                 self.send(command)  # pylint: disable=no-member
                 self.expect_exact(command, timeout=20)  # pylint: disable=no-member
@@ -48,6 +57,9 @@ class Controller(object):
         else:
             self._connection.log("Spawning command: '{}'".format(command))
             try:
+                (command_output, rc) = pexpect.run("ping -c1 {}".format(hostname), withexitstatus=1)
+                if rc != 0:
+                    raise ConnectionError("Device {} not reachable.".format(hostname))
                 self._session = pexpect.spawn(
                     command,
                     maxread=65536,

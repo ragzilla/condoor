@@ -46,7 +46,7 @@ class Chain(object):
                 self.connection.emit_message("Connecting {}".format(str(device)), log_level=logging.INFO)
                 protocol_name = device.get_protocol_name()
                 device.protocol = make_protocol(protocol_name, device)
-                self.ctrl.spawn_session(device.protocol.get_command())
+                self.ctrl.spawn_session(device.protocol.get_command(), device.node_info.hostname)
                 if device.connect(self.ctrl):
                     # logger.info("Connected to {}".format(device))
                     self.connection.emit_message("Connected {}".format(device), log_level=logging.INFO)
