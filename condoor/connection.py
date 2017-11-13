@@ -330,23 +330,18 @@ class Connection(object):
                 if chain.connect():
                     break
             except (ConnectionTimeoutError, ConnectionError) as e:  # pylint: disable=invalid-name
-                try:
-                    if chain.ctrl.is_connected:
-                        prompt = chain.ctrl.detect_prompt()
-                        if prompt is None:
-                            chain.disconnect()
-                        else:
-                            index = chain.get_device_index_based_on_prompt(prompt)
-                            if index is not None:
-                                chain.tail_disconnect(index)
-                            else:
-                                chain.disconnect()
-                except ConnectionTimeoutError as e:
-                    excpt = e
-
+                chain.disconnect()
                 self.emit_message("Connection error: {}".format(e), log_level=logging.INFO)
                 chain_indices.rotate(-1)
                 excpt = e
+
+            except Exception as e:
+                self.log("Exception hit: {}".format(str(e)))
+                chain.disconnect()
+                self.emit_message("Connection error: {}".format(e), log_level=logging.INFO)
+                chain_indices.rotate(-1)
+                excpt = e
+
             finally:
                 # TODO: Make a configuration parameter
                 elapsed = time.time() - begin
