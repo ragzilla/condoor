@@ -328,7 +328,7 @@ class Device(object):
 
     @property
     def version_text(self):
-        """Return version text and collect if not available."""
+        """Return version text and collect if not collected."""
         if self._version_text is None:
             self.chain.connection.log("Collecting version information")
             self._version_text = self.driver.get_version_text()
@@ -341,7 +341,7 @@ class Device(object):
 
     @property
     def hostname_text(self):
-        """Return hostname text and collect if not available."""
+        """Return hostname text and collect if not collected."""
         if self._hostname_text is None:
             self.chain.connection.log("Collecting hostname information")
             self._hostname_text = self.driver.get_hostname_text()
@@ -419,10 +419,15 @@ class Device(object):
     def prepare_terminal_session(self):
         """Send commands to prepare terminal session configuration."""
         for cmd in self.driver.prepare_terminal_session:
-            self.send(cmd)
+            try:
+                self.send(cmd)
+            except CommandSyntaxError:
+                self.chain.connection.log("Command not supported or not authorized: '{}'. Skipping".format(cmd))
+                pass
 
     def update_os_type(self):
         """Update os_type attribute."""
+        self.chain.connection.log("Detecting os type")
         os_type = self.driver.get_os_type(self.version_text)
         if os_type:
             self.chain.connection.log("SW Type: {}".format(os_type))
@@ -430,6 +435,7 @@ class Device(object):
 
     def update_os_version(self):
         """Update os_version attribute."""
+        self.chain.connection.log("Detecting os version")
         os_version = self.driver.get_os_version(self.version_text)
         if os_version:
             self.chain.connection.log("SW Version: {}".format(os_version))
@@ -437,6 +443,7 @@ class Device(object):
 
     def update_family(self):
         """Update family attribute."""
+        self.chain.connection.log("Detecting hw family")
         family = self.driver.get_hw_family(self.version_text)
         if family:
             self.chain.connection.log("HW Family: {}".format(family))
@@ -444,6 +451,7 @@ class Device(object):
 
     def update_platform(self):
         """Update platform attribute."""
+        self.chain.connection.log("Detecting hw platform")
         platform = self.driver.get_hw_platform(self.udi)
         if platform:
             self.chain.connection.log("HW Platform: {}".format(platform))
@@ -451,6 +459,7 @@ class Device(object):
 
     def update_console(self):
         """Update is_console whether connected via console."""
+        self.chain.connection.log("Detecting console connection")
         is_console = self.driver.is_console(self.users_text)
         if is_console is not None:
             self.is_console = is_console

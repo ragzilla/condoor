@@ -79,7 +79,7 @@ jumphost:
   username: '[U|u]sername:\s|^.*(?<![Ll]ast )login:'
   password: '[P|p]assword:\s?$'
   syntax_error:
-    pattern: 'command not found'
+    pattern: 'command not found|% Invalid input detected at ''\^'' marker\.'
     description: 'Command syntax error'
   version: '^([a-zA-Z0-9].*)'
 

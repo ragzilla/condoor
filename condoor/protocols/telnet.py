@@ -10,7 +10,7 @@ from condoor.protocols.base import Protocol
 from condoor.actions import a_send, a_send_password, a_authentication_error, a_unable_to_connect,\
     a_save_last_pattern, a_standby_console, a_send_username
 
-from condoor.exceptions import ConnectionError, ConnectionTimeoutError
+from condoor.exceptions import ConnectionError, ConnectionTimeoutError, CommandSyntaxError
 from condoor.config import CONF
 
 
@@ -40,11 +40,12 @@ class Telnet(Protocol):
         events = [ESCAPE_CHAR, driver.press_return_re, driver.standby_re, driver.username_re,
                   #            4                   5                  6                     7
                   driver.password_re, driver.more_re, self.device.prompt_re, driver.rommon_re,
-                  #       8                              9              10            11
-                  driver.unable_to_connect_re, driver.timeout_re, pexpect.TIMEOUT, PASSWORD_OK]
+                  #       8                              9              10            11              12
+                  driver.unable_to_connect_re, driver.timeout_re, pexpect.TIMEOUT, PASSWORD_OK, driver.syntax_error_re]
 
         transitions = [
             (ESCAPE_CHAR, [0], 1, None, _C['esc_char_timeout']),
+            (driver.syntax_error_re, [0], -1, CommandSyntaxError("Command syntax error"), 0),
             (driver.press_return_re, [0, 1], 1, partial(a_send, "\r\n"), 10),
             (PASSWORD_OK, [0, 1], 1, partial(a_send, "\r\n"), 10),
             (driver.standby_re, [0, 5], -1, partial(a_standby_console), 0),

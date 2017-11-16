@@ -6,7 +6,7 @@ import pexpect
 
 from condoor.drivers.generic import Driver as Generic
 from condoor.actions import a_send_password, a_expected_prompt, a_send_line, a_send, a_disconnect, a_reconnect
-from condoor.exceptions import ConnectionAuthenticationError, ConnectionError
+from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, CommandError
 from condoor.fsm import FSM
 
 
@@ -34,7 +34,13 @@ class Driver(Generic):
 
     def get_version_text(self):
         """Return the version information from IOS device."""
-        version_text = self.device.send("show version", timeout=120)
+        version_text = None
+        try:
+            version_text = self.device.send("show version", timeout=120)
+        except CommandError as exc:
+            exc.command = 'show version'
+            raise exc
+
         return version_text
 
     def enable(self, enable_password):

@@ -58,8 +58,8 @@ class Controller(object):
                 self._session.delaybeforesend = 0.3
                 self._connection.log("Child process FD: {}".format(self._session.child_fd))
                 rows, cols = self._session.getwinsize()
-                if cols < 160:
-                    self._session.setwinsize(512, 160)
+                if cols < 180:
+                    self._session.setwinsize(512, 240)
                     nrows, ncols = self._session.getwinsize()
                     self._connection.log("Terminal window size changed from {}x{} to {}x{}".format(
                         rows, cols, nrows, ncols))

@@ -12,8 +12,7 @@ protocol:
     options:
       - "UserKnownHostsFile=/dev/null"
       - "StrictHostKeyChecking=no"
-      - "LogLevel=QUIET"
-      - "HostKeyAlgorithms=+ssh-dss"
+      - "LogLevel=ERROR"
 
   console:
     first_prompt_timeout: 20
