@@ -60,11 +60,21 @@ class Driver(object):
 
     def get_version_text(self):
         """Return the version information from the device."""
+        show_version_brief_not_supported = False
+        version_text = None
         try:
             version_text = self.device.send("show version brief", timeout=120)
         except CommandError:
-            # IOS Hack - need to check if show version brief is supported on IOS/IOS XE
-            version_text = self.device.send("show version", timeout=120)
+            show_version_brief_not_supported = True
+
+        if show_version_brief_not_supported:
+            try:
+                # IOS Hack - need to check if show version brief is supported on IOS/IOS XE
+                version_text = self.device.send("show version", timeout=120)
+            except CommandError as exc:
+                exc.command = 'show version'
+                raise exc
+
         return version_text
 
     def get_inventory_text(self):

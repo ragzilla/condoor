@@ -2,6 +2,7 @@
 
 from condoor.drivers.generic import Driver as Generic
 from condoor import pattern_manager
+from condoor.exceptions import CommandError
 
 
 class Driver(Generic):
@@ -24,7 +25,13 @@ class Driver(Generic):
 
     def get_version_text(self):
         """Return the version information from NX-OS device."""
-        version_text = self.device.send("show version", timeout=120)
+        version_text = None
+        try:
+            version_text = self.device.send("show version", timeout=120)
+        except CommandError as exc:
+            exc.command = 'show version'
+            raise exc
+
         return version_text
 
     def update_driver(self, prompt):

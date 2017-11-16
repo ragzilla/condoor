@@ -9,7 +9,7 @@ from condoor.protocols.base import Protocol
 from condoor.actions import a_send_password, a_authentication_error, a_send, a_unable_to_connect, a_save_last_pattern,\
     a_send_line
 
-from condoor.exceptions import ConnectionError, ConnectionTimeoutError
+from condoor.exceptions import ConnectionError, ConnectionTimeoutError, CommandSyntaxError
 from condoor.config import CONF
 
 
@@ -57,11 +57,12 @@ class SSH(Protocol):
         events = [driver.password_re, self.device.prompt_re, driver.unable_to_connect_re,
                   #   3          4              5               6                   7
                   NEWSSHKEY, KNOWN_HOSTS, HOST_KEY_FAILED, MODULUS_TOO_SMALL, PROTOCOL_DIFFER,
-                  #      8              9
-                  driver.timeout_re, pexpect.TIMEOUT]
+                  #      8              9                    10
+                  driver.timeout_re, pexpect.TIMEOUT, driver.syntax_error_re]
 
         transitions = [
             (driver.password_re, [0, 1, 4, 5], -1, partial(a_save_last_pattern, self), 0),
+            (driver.syntax_error_re, [0], -1, CommandSyntaxError("Command syntax error"), 0),
             (self.device.prompt_re, [0], -1, partial(a_save_last_pattern, self), 0),
             #  cover all messages indicating that connection was not set up
             (driver.unable_to_connect_re, [0], -1, a_unable_to_connect, 0),

@@ -6,7 +6,7 @@ from condoor.device import Device
 from condoor.hopinfo import make_hop_info_from_url
 from condoor.controller import Controller
 from condoor.protocols import make_protocol
-from condoor.exceptions import ConnectionError
+from condoor.exceptions import ConnectionError, CommandSyntaxError, CommandError
 
 
 def device_gen(chain, urls):
@@ -46,8 +46,29 @@ class Chain(object):
                 self.connection.emit_message("Connecting {}".format(str(device)), log_level=logging.INFO)
                 protocol_name = device.get_protocol_name()
                 device.protocol = make_protocol(protocol_name, device)
-                self.ctrl.spawn_session(device.protocol.get_command())
-                if device.connect(self.ctrl):
+                command = device.protocol.get_command()
+                self.ctrl.spawn_session(command=command)
+                try:
+                    result = device.connect(self.ctrl)
+                except CommandSyntaxError as exc:
+                    # all commands during discovery provides itself in exception except
+                    # spawn session which is handled differently. If command syntax error is detected during spawning
+                    # a new session then the problem is either on jumphost or csm server.
+                    # The problem with spawning session is detected in connect FSM for telnet and ssh.
+                    if exc.command:
+                        cmd = exc.command
+                        host = device.hostname
+                    else:
+                        cmd = command
+                        host = "Jumphost/CSM"
+
+                    self.connection.log(
+                        "Command not supported or not authorized on {}: '{}'".format(host, cmd))
+                    raise CommandError(message="Command not supported or not authorized",
+                                       command=cmd,
+                                       host=host)
+
+                if result:
                     # logger.info("Connected to {}".format(device))
                     self.connection.emit_message("Connected {}".format(device), log_level=logging.INFO)
                 else:

@@ -4,7 +4,8 @@ from functools import partial
 import re
 import pexpect
 
-from condoor.exceptions import CommandSyntaxError, CommandTimeoutError, ConnectionError, ConnectionAuthenticationError
+from condoor.exceptions import CommandSyntaxError, CommandTimeoutError, ConnectionError,\
+    ConnectionAuthenticationError, CommandError
 from condoor.actions import a_connection_closed, a_expected_prompt, a_stays_connected, a_unexpected_prompt, a_send, \
     a_store_cmd_result, a_message_callback, a_send_line, a_reconnect, a_send_boot, a_return_and_reconnect
 from condoor.utils import pattern_to_str
@@ -52,7 +53,13 @@ class Driver(XRDriver):
 
     def get_version_text(self):
         """Return version information text."""
-        version_text = self.device.send("show version", timeout=120)
+        version_text = None
+        try:
+            version_text = self.device.send("show version", timeout=120)
+        except CommandError as exc:
+            exc.command = 'show version'
+            raise exc
+
         return version_text
 
     def wait_for_string(self, expected_string, timeout=60):

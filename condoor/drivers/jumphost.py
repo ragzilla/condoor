@@ -3,7 +3,7 @@
 import re
 
 from condoor.drivers.generic import Driver as Generic
-from condoor import pattern_manager, CommandError
+from condoor import pattern_manager, CommandError, ConnectionError
 
 
 class Driver(Generic):
@@ -20,7 +20,12 @@ class Driver(Generic):
 
     def get_version_text(self):
         """Return the version information from Unix host."""
-        version_text = self.device.send('uname -sr', timeout=10)
+        try:
+            version_text = self.device.send('uname -sr', timeout=10)
+        except CommandError:
+            self.log("Non Unix jumphost type detected")
+            return None
+            raise ConnectionError("Non Unix jumphost type detected.")
         return version_text
 
     def update_hostname(self, prompt):
@@ -36,6 +41,7 @@ class Driver(Generic):
                 self.device.hostname = hostname_text.splitlines()[0]
                 return hostname_text
         except CommandError:
+            self.log("Non Unix jumphost type detected")
             return None
 
     def make_dynamic_prompt(self, prompt):
