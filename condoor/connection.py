@@ -575,23 +575,23 @@ class Connection(object):
     def emit_message(self, message, log_level):
         """Call the msg callback function with the message."""
         self.log(message)
-        if self._msg_callback:
-            self._msg_callback(message)
-
         if log_level == logging.ERROR:
             if self._error_msg_callback:
                 self._error_msg_callback(message)
-            return
+                return
 
         if log_level == logging.WARNING:
             if self._warning_msg_callback:
                 self._warning_msg_callback(message)
-            return
+                return
 
         if log_level == logging.INFO:
             if self._info_msg_callback:
                 self._info_msg_callback(message)
-            return
+                return
+
+        if self._msg_callback:
+            self._msg_callback(message)
 
     @property
     def msg_callback(self):
