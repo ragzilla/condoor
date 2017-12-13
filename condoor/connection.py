@@ -97,10 +97,6 @@ class Connection(object):
         self._urls = urls
         self.connection_chains = None
 
-    def __del__(self):
-        """Clean up the object."""
-        self.finalize()
-
     def finalize(self):
         """Clean up the object.
 
@@ -120,7 +116,7 @@ class Connection(object):
             try:
                 # FIXME: take pattern from pattern manager
                 session_fd = FilteredFile(os.path.join(self._log_dir, 'session.log'),
-                                          mode="a", pattern=re.compile("s?ftp://.*:(.*)@"))
+                                          mode="a", pattern=re.compile("s?[f|s][t|c]p://.*:(.*)@"))
             except IOError:
                 print("Unable to create session log file")
 
@@ -134,7 +130,8 @@ class Connection(object):
         trace_fd = None
         if self._log_dir is not None:
             try:
-                trace_fd = open(os.path.join(self._log_dir, 'condoor.log'), "a")
+                trace_fd = FilteredFile(os.path.join(self._log_dir, 'condoor.log'), mode="a",
+                                        pattern=re.compile("s?[f|s][t|c]p://.*:(.*)@"))
             except IOError:
                 print("Unable to create log file")
         else:
