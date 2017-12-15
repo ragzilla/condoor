@@ -169,11 +169,12 @@ def parse_inventory(inventory_output=None):
 class FilteredFile(object):
     """Delegate class for handling filtered file object."""
 
-    __slots__ = ['_file', '_pattern']
+    __slots__ = ['_file', '_pattern', '_buffer']
 
     def __init__(self, filename, mode="r", encoding=None, pattern=None):
         """Initialize FilteredFile object."""
         object.__setattr__(self, '_pattern', pattern)
+        object.__setattr__(self, '_buffer', "")
         if encoding is None:
             object.__setattr__(self, '_file', open(filename, mode=mode))
         else:
@@ -185,21 +186,32 @@ class FilteredFile(object):
 
     def __setattr__(self, name, value):
         """Override standard setattr and delegate to file object."""
-        setattr(self._file, name, value)
+        if name == '_buffer':
+            object.__setattr__(self, '_buffer', value)
+        else:
+            setattr(self._file, name, value)
 
     def write(self, text):
         """Override the standard write method to filter the content."""
-        if self._pattern:
-            # pattern already compiled no need to check
-            result = re.search(self._pattern, text)
-            if result:
-                for group in result.groups():
-                    if group:
-                        text = text.replace(group, "***")
-        self._file.write(text)
+        index = text.find('\n')
+        if index == -1:
+            self._buffer = self._buffer + text
+        else:
+            self._buffer = self._buffer + text[:index + 1]
+            if self._pattern:
+                # pattern already compiled no need to check
+                result = re.search(self._pattern, self._buffer)
+                if result:
+                    for group in result.groups():
+                        if group:
+                            self._buffer = self._buffer.replace(group, "***")
+            self._file.write(self._buffer)
+            self._file.flush()
+            self._buffer = text[index + 1:]
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit from context."""
+        self.write("\r\n")
         self._file.close()
 
     def __enter__(self):
