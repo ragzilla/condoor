@@ -191,13 +191,6 @@ class FilteredFile(object):
         else:
             setattr(self._file, name, value)
 
-    def flush(self):
-        """Override the standard flush method.
-
-        Flush is done in write method when new line received.
-        """
-        pass
-
     def write(self, text):
         """Override the standard write method to filter the content."""
         index = text.find('\n')
@@ -218,6 +211,7 @@ class FilteredFile(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Exit from context."""
+        self.write("\r\n")
         self._file.close()
 
     def __enter__(self):
