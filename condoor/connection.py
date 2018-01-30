@@ -169,14 +169,16 @@ class Connection(object):
                 # do not close if stderr
                 if self._trace_fd is not sys.stderr:
                     self._trace_fd.close()
+                    self.log("Trace log closed")
             self._trace_fd = None
 
-        if not self._external_session_fd and self._trace_fd:
+        if not self._external_session_fd and self.session_fd:
             if not self.session_fd.closed:
                 self.session_fd.flush()
                 # do not close if stdout
                 if self.session_fd is not sys.stdout:
                     self.session_fd.close()
+                    self.log("Session log closed")
             self.session_fd = None
 
     def _get_key(self):

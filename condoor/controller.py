@@ -1,6 +1,7 @@
 """Provides the Controller class which is a wrapper to the pyexpect.spawn class."""
 
 import re
+import os
 import pexpect
 from time import time
 
@@ -47,12 +48,14 @@ class Controller(object):
 
         else:
             self._connection.log("Spawning command: '{}'".format(command))
+            env = os.environ
+            env['TERM'] = 'vt100'  # to avoid color control characters and make sure other env not intact, esp. PATH
             try:
                 self._session = pexpect.spawn(
                     command,
                     maxread=65536,
                     searchwindowsize=4000,
-                    env={"TERM": "vt100"},  # to avoid color control characters
+                    env=env,
                     echo=True  # KEEP YOUR DIRTY HANDS OFF FROM ECHO!
                 )
                 self._session.delaybeforesend = 0.3
