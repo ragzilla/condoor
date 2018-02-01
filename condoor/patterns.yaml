@@ -147,7 +147,7 @@ IOS:
   standby: 'Standby console disabled'
   #platform: '^[Cc]isco (.*?)(?: .*) (?:processor)? \('
   platform: '^[Cc]isco (.*?)(?: .*)memory'
-  pid2platform: '([A-Z]{3}[-| ]?[0-9v]{0,4})'
+  pid2platform: '^([A-Z0-9v]*)-?'
   version: 'Version (.*?),?(?:\[| |$)'
   syntax_error:
     pattern: '% Bad IP address or host name% Unknown command or computer name, or unable to find computer address|% Invalid input detected at ''\^'' marker\.|% Type "show \?" for a list of subcommands|% Ambiguous command:|% Incomplete command\.'
