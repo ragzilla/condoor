@@ -32,7 +32,7 @@ class Driver(Generic):
         "ASR-9": "ASR9K",
         "CRS": "CRS",
         "12": "XR12K",
-        "IOS XRv": "IOSXRv",
+        "XRv": "IOSXRv",
     }
 
     def __init__(self, device):
