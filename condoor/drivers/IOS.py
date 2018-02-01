@@ -26,6 +26,7 @@ class Driver(Generic):
     prepare_terminal_session = ['terminal len 0', 'terminal width 0']
     families = {
         'A9': 'ASR900',
+        'IOSv': 'IOSv',
     }
 
     def __init__(self, device):
