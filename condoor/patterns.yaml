@@ -95,6 +95,7 @@ XR:
   username: '[Uu]sername: |BRIDGETON NOC:'
   password: '[Pp]assword: '
   standby: 'This \(D\)RP Node is not ready or active for login /configuration'
+  pid2platform: '([A-Z]{3}[-| ]?[0-9]{2,4}|XRV)'
   syntax_error:
     # double ' to escape
     pattern: '% Invalid input detected at ''\^'' marker\.|% Incomplete command\.|% Ambiguous command:'
