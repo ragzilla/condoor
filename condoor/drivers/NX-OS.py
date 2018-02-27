@@ -15,8 +15,8 @@ class Driver(Generic):
     prepare_terminal_session = ['terminal len 0', 'terminal width 511']
     # N9K-C9508
     families = {
-        "Nexus9": "N9K",
-        "N9K-C9": "N9K",
+        "Nexus9": "Nexus9000",
+        "N9K-C9": "Nexus9000",
     }
 
     def __init__(self, device):
