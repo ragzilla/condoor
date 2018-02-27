@@ -107,7 +107,8 @@ class Controller(object):
         if self._session and self._session.isalive():
             self._connection.log("Disconnecting the sessions")
             # write the session log buffer to disk
-            self._session.logfile_read.write("\r\n")
+            if self._session.logfile_read:
+                self._session.logfile_read.write("\r\n")
             self._session.close(force=True)
             self._session.wait()
         self._connection.log("Disconnected")
