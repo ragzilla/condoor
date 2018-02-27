@@ -53,6 +53,7 @@ class Driver(object):
         self.plane = 'sdr'
 
         self.log = device.chain.connection.log
+        self.platform_string = ""
 
     def __repr__(self):
         """Return the string representation of the driver class."""
@@ -146,11 +147,12 @@ class Driver(object):
 
         match = re.search(self.platform_re, version_text, re.MULTILINE)
         if match:
+            self.platform_string = match.group()
             self.log("Platform string: {}".format(match.group()))
-            family = match.group(1)
+            self.raw_family = match.group(1)
             # sort keys on len reversed (longest first)
             for key in sorted(self.families, key=len, reverse=True):
-                if family.startswith(key):
+                if self.raw_family.startswith(key):
                     family = self.families[key]
                     break
             else:
@@ -164,6 +166,9 @@ class Driver(object):
         platform = None
         try:
             pid = udi['pid']
+            if pid == '':
+                self.log("Empty PID. Use the hw family from the platform string.")
+                return self.raw_family
             match = re.search(self.pid2platform_re, pid)
             if match:
                 platform = match.group(1)
