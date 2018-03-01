@@ -178,9 +178,10 @@ NX-OS:
   standby: '\(standby\)'
   syntax_error: '% Invalid command at ''\^'' marker\.|% Incomplete command at ''\^'' marker\.'
   # to capture the platform string from show version
-  pid2platform: '([A-Z0-9]{3}[-| ]?C[0-9]{3,4})'
-  version: 'System version: (.*)'
+  pid2platform: '([A-Z0-9]{3}[-| ]?C[0-9]{3,4}|N9K\-NXOSV)'
+  version: '(?:System version:|NXOS: version) (.*)'
   console: 'tty'
+  vty: 'pts'
 
 Calvados:
   prompt: 'sysadmin-vm:?(?:_node)?[0-3]_RS?P[0-1]:?(?P<hostname>.*?)(\([^()]*\))?#'

@@ -54,6 +54,7 @@ class Driver(object):
 
         self.log = device.chain.connection.log
         self.platform_string = ""
+        self.raw_family = None
 
     def __repr__(self):
         """Return the string representation of the driver class."""
