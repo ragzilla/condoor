@@ -6,7 +6,8 @@ import pexpect
 
 from condoor.drivers.generic import Driver as Generic
 from condoor.actions import a_send_password, a_expected_prompt, a_send_line, a_send, a_disconnect, a_reconnect
-from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, CommandError
+from condoor.exceptions import ConnectionAuthenticationError, ConnectionError, CommandError, CommandSyntaxError, \
+    CommandTimeoutError
 from condoor.fsm import FSM
 
 
@@ -90,3 +91,30 @@ class Driver(Generic):
         ]
         fsm = FSM("IOS-RELOAD", self.device, events, transitions, timeout=10, max_transitions=5)
         return fsm.run()
+
+    def config(self, config_text, plane):
+        nol = config_text.count('\n')
+        config_lines = iter(config_text.splitlines())
+        events = [self.prompt_re, self.syntax_error_re]
+        transitions = [
+            (self.prompt_re, [0], 0, partial(a_send_line, config_lines), 10),
+            (self.syntax_error_re, [0], -1, CommandSyntaxError("Configuration syntax error."), 0)
+        ]
+        self.device.ctrl.send_command(self.config_cmd)
+        fsm = FSM("CONFIG", self.device, events, transitions, timeout=10, max_transitions=nol + 5)
+        fsm.run()
+
+        # after the configuration the hostname may change. Need to detect it again
+        try:
+            self.device.send("", timeout=2)
+        except CommandTimeoutError:
+            prompt = self.device.ctrl.detect_prompt()
+            self.device.prompt_re = self.make_dynamic_prompt(prompt)
+            self.device.update_config_mode(prompt)
+
+        if self.device.mode == "config":
+            self.device.send("end")
+
+        self.device.send("write memory")
+
+        return "NO-COMMIT-ID"
