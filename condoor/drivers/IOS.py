@@ -93,6 +93,7 @@ class Driver(Generic):
         return fsm.run()
 
     def config(self, config_text, plane):
+        """Apply config."""
         nol = config_text.count('\n')
         config_lines = iter(config_text.splitlines())
         events = [self.prompt_re, self.syntax_error_re]
