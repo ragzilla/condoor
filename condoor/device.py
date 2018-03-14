@@ -141,6 +141,7 @@ class Device(object):
             return False
 
     def _connected_to_target(self):
+        self.chain.connection.log('_connected_to_target')
         self.update_driver(self.prompt)
         self.after_connect()
 
@@ -164,7 +165,6 @@ class Device(object):
 
         if self.udi is None:
             self.update_udi()
-
         if self.family is None:
             self.update_family()
 
@@ -316,10 +316,10 @@ class Device(object):
             driver_class = getattr(module, 'Driver')
         except ImportError as e:  # pylint: disable=invalid-name
             self.chain.connection.log("Import error", exc_info=e)
+            # no driver - call again with default 'generic'
             return self.make_driver()
-            # raise GeneralError("Platform {} not supported".format(driver_name))
 
-            self.chain.connection.log("Make Device: {} with Driver: {}".format(self, driver_class.platform))
+        self.chain.connection.log("Make Device: {} with Driver: {}".format(self, driver_class.platform))
         return driver_class(self)
 
     def get_previous_prompts(self):
