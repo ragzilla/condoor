@@ -173,13 +173,13 @@ NX-OS:
   prompt_dynamic: '{hostname}(\([^()]*\))?#'
   prompt_default: 'switch#'
   password: 'Password: '
-  username: '(.*?) login: '
+  username: '(.*?)login: '
   rommon: 'loader >'
   standby: '\(standby\)'
   syntax_error: '% Invalid command at ''\^'' marker\.|% Incomplete command at ''\^'' marker\.'
   # to capture the platform string from show version
   pid2platform: '([A-Z0-9]{3}[-| ]?C[0-9]{3,4}|N9K\-NXOSV)'
-  version: '(?:System version:|NXOS: version) (.*)'
+  version: '(?:system:\W+version|NXOS: version) (\S+)'
   console: 'tty'
   vty: 'pts'
 

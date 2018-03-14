@@ -17,7 +17,7 @@ class Driver(Generic):
     families = {
         "Nexus9": "Nexus9000",
         "N9K-C9": "Nexus9000",
-        "Nexus7000": "Nexus7000",
+        "Nexus7": "Nexus7000",
         "NX-OSv": "NX-OSv"
     }
 
