@@ -25,10 +25,10 @@ class TestNX9KConnection(CondoorTestCase):
 
         self.assertEqual(conn.is_discovered, True, "Not discovered properly")
         self.assertEqual(conn.hostname, "switch", "Wrong Hostname: {}".format(conn.hostname))
-        self.assertEqual(conn.family, "N9K", "Wrong Family: {}".format(conn.family))
+        self.assertEqual(conn.family, "Nexus9000", "Wrong Family: {}".format(conn.family))
         self.assertEqual(conn.platform, "N9K-C9508", "Wrong Platform: {}".format(conn.platform))
         self.assertEqual(conn.os_type, "NX-OS", "Wrong OS Type: {}".format(conn.os_type))
-        self.assertEqual(conn.os_version, "7.0(3)IED5(1)", "Wrong Version: {}".format(conn.os_version))
+        self.assertEqual(conn.os_version, "7.0(3)I5(1)", "Wrong Version: {}".format(conn.os_version))
         self.assertEqual(conn.udi['name'], "Chassis", "Wrong Name: {}".format(conn.udi['name']))
         self.assertEqual(conn.udi['description'], "Nexus9000 C9508 (8 Slot) Chassis",
                          "Wrong Description: {}".format(conn.udi['description']))

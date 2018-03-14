@@ -1,0 +1,46 @@
+
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+Copyright (c) 2002-2018, Cisco Systems, Inc. All rights reserved.
+The copyrights to certain works contained in this software are
+owned by other third parties and used and distributed under
+license. Certain components of this software are licensed under
+the GNU General Public License (GPL) version 2.0 or the GNU
+Lesser General Public License (LGPL) Version 2.1. A copy of each
+such license is available at
+http://www.opensource.org/licenses/gpl-2.0.php and
+http://www.opensource.org/licenses/lgpl-2.1.php
+
+Software
+  BIOS:      version 3.1.0
+  kickstart: version 8.1(2a)
+  system:    version 8.1(2a)
+  BIOS compile time:       02/27/2013
+  kickstart image file is: bootflash:///n7700-s2-kickstart.8.1.2a.bin
+  kickstart compile time:  2/21/2018 1:00:00 [03/05/2018 16:08:36]
+  system image file is:    bootflash:///n7700-s2-dk9.8.1.2a.bin
+  system compile time:     2/21/2018 1:00:00 [03/05/2018 17:02:30]
+
+
+Hardware
+  cisco Nexus7700 C7706 (6 Slot) Chassis ("Supervisor Module-2")
+  Intel(R) Xeon(R) CPU         with 32939336 kB of memory.
+  Processor Board ID JAE182607SV
+
+  Device name: N7K-15
+  bootflash:    4014080 kB
+  slot0:        8004861 kB (expansion flash)
+
+Kernel uptime is 5 day(s), 7 hour(s), 14 minute(s), 49 second(s)
+
+Last reset at 968552 usecs after  Thu Mar  8 17:05:48 2018
+
+  Reason: Reset Requested by CLI command reload
+  System version: 8.2(2.19)
+  Service: 
+
+plugin
+  Core Plugin, Ethernet Plugin
+
+Active Package(s)

@@ -34,6 +34,7 @@ class DeviceHandler(TelnetHandler):
     WELCOME = "\n"
     #GOODBYE = "Connection closed by foreign host."
     GOODBYE = None
+    CONSOLE = False
 
     def authCallback(self, username, password):
         if self.authNeedUser:
@@ -111,6 +112,8 @@ class DeviceHandler(TelnetHandler):
         """
         username = None
         password = None
+        if self.CONSOLE:
+            _ = self.readline()
         for _ in range(3):
             self.writeline(self.AUTH_MESSAGE)
             if self.authCallback:
@@ -242,7 +245,7 @@ http://www.gnu.org/licenses/old-licenses/library.txt."""
     PROMPT = "switch#"
     TELNET_ISSUE = "\nUser Access Verification"  # does not work
     AUTH_MESSAGE = "\nUser Access Verification"
-    AUTH_FAILED_MESSAGE = "\n% Authentication failed"
+    AUTH_FAILED_MESSAGE = "\nLogin incorrect"
     PROMPT_USER = "switch login: "
     PROMPT_PASS = "Password: "
     WRONGCOMMAND = """         ^
@@ -254,7 +257,18 @@ http://www.gnu.org/licenses/old-licenses/library.txt."""
 
 
 class NX9KHandler(NXOSHandler):
-    platform = "N9K"
+    platform = "NX9K"
+
+
+class NX7700Handler(NXOSHandler):
+    platform = "NX7700"
+    PROMPT_USER = "login: "
+
+
+class NX7700CHandler(NXOSHandler):
+    platform = "NX7700console"
+    PROMPT_USER = "login: "
+    CONSOLE = True
 
 
 class SunHandler(DeviceHandler):
@@ -372,6 +386,11 @@ class ASR901Handler(IOSXEHandler):
     platform = "ASR901"
     authNeedUser = False
     PROMPT = "CSG-1202-ASR901>"
+
+
+class C4500XHandler(IOSXEHandler):
+    platform = "C4500X"
+    PROMPT = "Switch>"
 
 
 def clean_up(server):

@@ -1,0 +1,4 @@
+
+NAME: "Chassis",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis "     
+PID: N77-C7706           ,  VID: V01 ,  SN: FXS1824Q0SE          
+
