@@ -1,0 +1,19 @@
+
+NAME: "Switch System", DESCR: "Cisco Systems, Inc. WS-C4500X-32 2 slot switch "
+PID:                   , VID:      , SN: JAE154100BA
+
+NAME: "Supervisor(slot 1)", DESCR: "4500X-32 10GE (SFP+)"
+PID: WS-C4500X-32      , VID: V00  , SN: JAE154100BA
+
+NAME: "TenGigabitEthernet1/17", DESCR: "1000BaseT"
+PID: Unspecified       , VID:      , SN: 00000MTC122001K1
+
+NAME: "Linecard(slot 2)", DESCR: "10GE SFP+"
+PID: C4KX-NM-8         , VID: V00  , SN: JAE15430E6V
+
+NAME: "Power Supply 1", DESCR: "Power Supply ( AC 750W )"
+PID: PWR-C49X-750AC-R  , VID: V00  , SN: ART1537X1RU
+
+NAME: "Power Supply 2", DESCR: "Power Supply ( AC 750W )"
+PID: C4KX-PWR-750AC-R  , VID: V01  , SN: ART1612X0G0
+

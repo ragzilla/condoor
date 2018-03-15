@@ -1,0 +1,43 @@
+
+NAME: "Chassis",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis "     
+PID: N77-C7706           ,  VID: V01 ,  SN: FXS1824Q0SE          
+
+NAME: "Slot 1",  DESCR: "1/10 Gbps Ethernet Module"             
+PID: N77-F248XP-23E      ,  VID: V01 ,  SN: JAE1733000U          
+
+NAME: "Slot 3",  DESCR: "Supervisor Module-2"                   
+PID: N77-SUP2E           ,  VID: V02 ,  SN: JAE182607SV          
+
+NAME: "Slot 4",  DESCR: "Supervisor Module-2"                   
+PID: N77-SUP2E           ,  VID: V02 ,  SN: JAE182607RA          
+
+NAME: "Slot 5",  DESCR: "1/10 Gbps Ethernet Module"             
+PID: N77-M348XP-23L      ,  VID: V01 ,  SN: JAE2034058E          
+
+NAME: "Slot 6",  DESCR: "1/10 Gbps Ethernet Module"             
+PID: N77-F348XP-23       ,  VID: V01 ,  SN: JAE182000HP          
+
+NAME: "Slot 7",  DESCR: "Fabric card module"                    
+PID: N77-C7706-FAB-2     ,  VID: V01 ,  SN: JAE182606YJ          
+
+NAME: "Slot 9",  DESCR: "Fabric card module"                    
+PID: N77-C7706-FAB-2     ,  VID: V01 ,  SN: JAE1826088C          
+
+NAME: "Slot 11",  DESCR: "Fabric card module"                    
+PID: N77-C7706-FAB-2     ,  VID: V01 ,  SN: JAE182606Z1          
+
+NAME: "Slot 33",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis Power Supply"
+PID: N77-AC-3KW          ,  VID: V01 ,  SN: ART182270AM          
+
+NAME: "Slot 34",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis Power Supply"
+PID: N77-AC-3KW          ,  VID: V01 ,  SN: ART182270XA          
+
+NAME: "Slot 37",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis Fan Module"
+PID: N77-C7706-FAN       ,  VID: V01 ,  SN: FXS1819A054          
+
+NAME: "Slot 38",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis Fan Module"
+PID: N77-C7706-FAN       ,  VID: V01 ,  SN: FXS1819A05P          
+
+NAME: "Slot 39",  DESCR: "Nexus7700 C7706 (6 Slot) Chassis Fan Module"
+PID: N77-C7706-FAN       ,  VID: V01 ,  SN: FXS1819A053          
+

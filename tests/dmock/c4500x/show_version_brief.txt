@@ -1,0 +1,5 @@
+
+show version brief
+             ^
+
+% Invalid input detected at '^' marker.

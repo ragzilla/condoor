@@ -136,7 +136,7 @@ def parse_inventory(inventory_output=None):
     chassis_udi_text = None
     for line in inventory_output.split('\n'):
         lc_line = line.lower()
-        if 'chassis' in lc_line and 'name' in lc_line and 'descr':
+        if ('chassis' in lc_line or 'switch system' in lc_line) and 'name' in lc_line and 'descr':
             capture_next = True
             chassis_udi_text = line
             continue
@@ -162,7 +162,7 @@ def parse_inventory(inventory_output=None):
 
     match = re.search(r"(?i)SN: (?P<sn>.*)", inventory_output, re.MULTILINE)
     if match:
-        udi['sn'] = match.group('sn')
+        udi['sn'] = match.group('sn').strip()
     return udi
 
 

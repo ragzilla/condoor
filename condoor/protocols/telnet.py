@@ -8,7 +8,7 @@ from condoor.fsm import FSM
 from condoor.utils import pattern_to_str
 from condoor.protocols.base import Protocol
 from condoor.actions import a_send, a_send_password, a_authentication_error, a_unable_to_connect,\
-    a_save_last_pattern, a_standby_console, a_send_username
+    a_save_last_pattern, a_standby_console, a_send_username, a_send_line
 
 from condoor.exceptions import ConnectionError, ConnectionTimeoutError, CommandSyntaxError
 from condoor.config import CONF
@@ -46,8 +46,8 @@ class Telnet(Protocol):
         transitions = [
             (ESCAPE_CHAR, [0], 1, None, _C['esc_char_timeout']),
             (driver.syntax_error_re, [0], -1, CommandSyntaxError("Command syntax error"), 0),
-            (driver.press_return_re, [0, 1], 1, partial(a_send, "\r\n"), 10),
-            (PASSWORD_OK, [0, 1], 1, partial(a_send, "\r\n"), 10),
+            (driver.press_return_re, [0, 1], 1, partial(a_send_line, ''), 10),
+            (PASSWORD_OK, [0, 1], 1, partial(a_send_line, ''), 10),
             (driver.standby_re, [0, 5], -1, partial(a_standby_console), 0),
             (driver.username_re, [0, 1, 5, 6], -1, partial(a_save_last_pattern, self), 0),
             (driver.password_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
@@ -60,7 +60,7 @@ class Telnet(Protocol):
             (driver.rommon_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
             (driver.unable_to_connect_re, [0, 1, 5], -1, a_unable_to_connect, 0),
             (driver.timeout_re, [0, 1, 5], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
-            (pexpect.TIMEOUT, [0, 1], 5, partial(a_send, "\r\n"), 10),
+            (pexpect.TIMEOUT, [0, 1], 5, partial(a_send_line, ''), 10),
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
 
@@ -86,8 +86,8 @@ class Telnet(Protocol):
             (driver.password_re, [2], -1, a_authentication_error, 0),
             (driver.authentication_error_re, [1, 2], -1, a_authentication_error, 0),
             (self.device.prompt_re, [0, 1, 2], -1, None, 0),
-            (driver.rommon_re, [0], -1, partial(a_send, "\r\n"), 0),
-            (pexpect.TIMEOUT, [0], 1, partial(a_send, "\r\n"), 10),
+            (driver.rommon_re, [0], -1, partial(a_send_line, ''), 0),
+            (pexpect.TIMEOUT, [0], 1, partial(a_send_line, ''), 10),
             (pexpect.TIMEOUT, [2], -1, None, 0),
             (pexpect.TIMEOUT, [3, 7], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
             (driver.unable_to_connect_re, [0, 1, 2], -1, a_unable_to_connect, 0),
@@ -121,9 +121,9 @@ class TelnetConsole(Telnet):
                   driver.unable_to_connect_re, driver.timeout_re, pexpect.TIMEOUT, PASSWORD_OK]
 
         transitions = [
-            (ESCAPE_CHAR, [0], 1, partial(a_send, "\r\n"), _C['esc_char_timeout']),
-            (driver.press_return_re, [0, 1], 1, partial(a_send, "\r\n"), 10),
-            (PASSWORD_OK, [0, 1], 1, partial(a_send, "\r\n"), 10),
+            (ESCAPE_CHAR, [0], 1, partial(a_send_line, ''), _C['esc_char_timeout']),
+            (driver.press_return_re, [0, 1], 1, partial(a_send_line, ''), 10),
+            (PASSWORD_OK, [0, 1], 1, partial(a_send_line, ''), 10),
             (driver.standby_re, [0, 1, 5], -1, ConnectionError("Standby console", self.hostname), 0),
             (driver.username_re, [0, 1, 5, 6], -1, partial(a_save_last_pattern, self), 0),
             (driver.password_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
@@ -136,7 +136,7 @@ class TelnetConsole(Telnet):
             (driver.rommon_re, [0, 1, 5], -1, partial(a_save_last_pattern, self), 0),
             (driver.unable_to_connect_re, [0, 1], -1, a_unable_to_connect, 0),
             (driver.timeout_re, [0, 1], -1, ConnectionTimeoutError("Connection Timeout", self.hostname), 0),
-            (pexpect.TIMEOUT, [0, 1], 5, partial(a_send, "\r\n"), 10),
+            (pexpect.TIMEOUT, [0, 1], 5, partial(a_send_line, ''), 10),
             (pexpect.TIMEOUT, [5], -1, ConnectionTimeoutError("Connection timeout", self.hostname), 0)
         ]
         self.log("EXPECTED_PROMPT={}".format(pattern_to_str(self.device.prompt_re)))
