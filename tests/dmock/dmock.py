@@ -36,6 +36,9 @@ class DeviceHandler(TelnetHandler):
     GOODBYE = None
     CONSOLE = False
 
+    mode = 'sdr'
+    base_prompt = PROMPT
+
     def authCallback(self, username, password):
         if self.authNeedUser:
             if username != self.USERNAME:
@@ -48,7 +51,6 @@ class DeviceHandler(TelnetHandler):
         # if username != self.USERNAME or password != self.PASSWORD:
         #     raise Exception()
         # return True
-
 
     def get_response(self, command_line):
         response = self.response_dict.get(command_line, None)
@@ -72,6 +74,8 @@ class DeviceHandler(TelnetHandler):
     def cmd(self, params):
         """Default command handler"""
         params.insert(0, self.input.cmd)
+        if self.mode == 'admin':
+            params.insert(0, 'admin')
         command_line = "_".join(params)
         response = self.get_response(command_line)
         action_name = self.get_action(command_line, 'BEFORE')
@@ -96,12 +100,17 @@ class DeviceHandler(TelnetHandler):
         """
         pass
 
+
     @command('wrongcommand')
     def wrongcommand(self, params):
         self.writeresponse(self.WRONGCOMMAND)
 
     @command('exit')
     def exit(self, params):
+        if self.mode == 'admin':
+            self.PROMPT = self.base_prompt
+            self.mode = 'sdr'
+            return
         self.RUNSHELL = False
         if self.GOODBYE:
             self.writeline(self.GOODBYE)
@@ -165,8 +174,12 @@ class XRHandler(DeviceHandler):
 
     response_dict = {"wrongcommand": WRONGCOMMAND}
 
-    @command(['show', 'admin'])
-    def show_admin(self, params):
+    @command('show')
+    def show(self, params):
+        self.cmd(params=params)
+
+    @command('admin')
+    def admin(self, params):
         self.cmd(params=params)
 
 
@@ -182,6 +195,20 @@ class ASR9K64Handler(XRHandler):
     Standard ASR9000 64 bit Handler
     """
     platform = "ASR9K-64"
+    mode = 'sdr'
+    calvados_prompt = 'sysadmin-vm:0_RSP0#'
+    PROMPT = 'RP/0/RP0/CPU0:ios#'
+    base_prompt = PROMPT
+    CONSOLE = True
+
+    @command('admin')
+    def admin(self, params):
+        if not params:
+            self.PROMPT = self.calvados_prompt
+            self.mode = 'admin'
+        else:
+            self.cmd(params=params)
+
 
 
 class XR12KHandler(XRHandler):
@@ -192,8 +219,82 @@ class XR12KHandler(XRHandler):
     PROMPT = "RP/0/7/CPU0:GSR-PE19#"
 
 
-class NCS1KHandler(XRHandler):
+
+class EXRHandler(XRHandler):
+    platform = "NCS6K"
+    mode = 'sdr'
+    PROMPT = 'RP/0/RP0/CPU0:sdr_1#'
+    calvados_prompt = 'sysadmin-vm:0_RP0:6K-651#'
+    PROMPT_USER_ADMIN = 'Admin Username:'
+    PROMPT_PASS_ADMIN = 'Password:'
+    AUTH_FAILED_MESSAGE_ADMIN = 'Authentication failed'
+    base_prompt = PROMPT
+
+    @command('admin')
+    def admin(self, params):
+        if not params:
+            self.authentication_admin()
+            self.PROMPT = self.calvados_prompt
+            self.mode = 'admin'
+        else:
+            self.cmd(params=params)
+
+    def authentication_admin(self):
+        """Checks the authentication and sets the username of the currently connected terminal.
+        Returns True or False
+        """
+        username = None
+        password = None
+        for _ in range(3):
+            if self.authCallback:
+                if self.authNeedUser:
+                    username = self.readline(prompt=self.PROMPT_USER_ADMIN, use_history=False)
+                    if username == 'QUIT':
+                        self.RUNSHELL = False
+                        return True
+
+                if self.authNeedPass:
+                    password = self.readline(echo=False, prompt=self.PROMPT_PASS_ADMIN, use_history=False)
+                    if password == 'QUIT':
+                        self.RUNSHELL = False
+                        return True
+
+                    if self.DOECHO:
+                        pass
+                        # self.write("\n")
+                try:
+                    self.authCallback(username, password)
+                except Exception:
+                    self.username = None
+                    continue
+
+                else:
+                    # Successful authentication
+                    self.username = username
+                    self.write("\n")
+                    return True
+            else:
+                # No authentication desired
+                self.username = None
+                return True
+
+        self.writeresponse(self.AUTH_FAILED_MESSAGE_ADMIN)
+        return False
+
+
+class NCS1001Handler(EXRHandler):
+    platform = "NCS1001"
+    PROMPT = "RP/0/RP0/CPU0:ncs1001-fb-1#"
+    calvados_prompt = 'sysadmin-vm:0_RP0#'
+    base_prompt = PROMPT
+
+
+class NCS1KHandler(EXRHandler):
     platform = "NCS1K"
+    calvados_prompt = 'sysadmin-vm:0_RP0#'
+    PROMPT = "RP/0/RP0/CPU0:ios#"
+    base_prompt = PROMPT
+
     response_dict = {
         "show_install_request": "10.77.132.127: Permission denied"}
 
@@ -205,20 +306,41 @@ class NCS1KHandler(XRHandler):
         self.RUNSHELL = False
 
 
-class NCS1001Handler(XRHandler):
-    platform = "NCS1001"
-    PROMPT = "RP/0/RP0/CPU0:ncs1001-fb-1#"
-
-
-class NCS4KHandler(XRHandler):
+class NCS4KHandler(EXRHandler):
     platform = "NCS4K"
+    calvados_prompt = 'sysadmin-vm:0_RP0#'
+    PROMPT = "RP/0/RP0/CPU0:ios#"
+    base_prompt = PROMPT
 
 
-class NCS5500Handler(XRHandler):
+class NCS5500Handler(EXRHandler):
     platform = "NCS5500"
+    calvados_prompt = 'sysadmin-vm:0_RP0#'
+    PROMPT = "RP/0/RP0/CPU0:ios#"
+    base_prompt = PROMPT
 
-class NCS540Handler(XRHandler):
+
+class NCS540Handler(EXRHandler):
     platform = "NCS540"
+    calvados_prompt = 'sysadmin-vm:0_RP0#'
+    PROMPT = "RP/0/RP0/CPU0:ios#"
+    base_prompt = PROMPT
+    CONSOLE = True
+
+
+class NCS6KHandler(EXRHandler):
+    platform = "NCS6K"
+    mode = 'sdr'
+    PROMPT = 'RP/0/RP0/CPU0:sdr_1#'
+    calvados_prompt = 'sysadmin-vm:0_RP0:6K-651#'
+    PROMPT_USER_ADMIN = 'Admin Username:'
+    PROMPT_PASS_ADMIN = 'Password:'
+    AUTH_FAILED_MESSAGE_ADMIN = 'Authentication failed'
+    base_prompt = PROMPT
+    CONSOLE = True
+
+
+
 
 
 class NXOSHandler(DeviceHandler):
@@ -258,7 +380,7 @@ http://www.gnu.org/licenses/old-licenses/library.txt."""
 
 class NX9KHandler(NXOSHandler):
     platform = "NX9K"
-
+    CONSOLE = True
 
 class NX7700Handler(NXOSHandler):
     platform = "NX7700"
@@ -312,6 +434,7 @@ class SunHandler(DeviceHandler):
                 else:
                     # Successful authentication
                     self.username = username
+                    self.write("\n")
                     return True
             else:
                 # No authentication desired
@@ -400,7 +523,7 @@ def clean_up(server):
 if __name__ == '__main__':
 
     from threading import Thread
-    server = TelnetServer(("127.0.0.1", 10025), ASR9KHandler)
+    server = TelnetServer(("127.0.0.1", 10025), NCS6KHandler)
     server_thread = Thread(target=server.serve_forever)
     server_thread.daemon = True
     server_thread.start()

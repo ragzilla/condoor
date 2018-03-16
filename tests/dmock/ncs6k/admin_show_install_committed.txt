@@ -1,0 +1,18 @@
+
+Thu Mar  15 15:48:43.408 UTC
+ Node 0/RP0 [RP]
+    Committed Packages: 1
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+ 	
+ Node 0/RP1 [RP]
+    Committed Packages: 1
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+ 	
+ Node 0/1 [LC]
+    Committed Packages: 1
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+ 	
+ Node 0/5 [LC]
+    Committed Packages: 1
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+ 	

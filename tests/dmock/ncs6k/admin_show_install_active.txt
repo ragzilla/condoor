@@ -1,0 +1,22 @@
+
+Thu Mar  15 15:48:42.119 UTC
+ Node 0/RP0 [RP]
+    Active Packages: 2
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+       ncs6k-sysadmin-system-6.5.1.14-r65109I.CSCcv11111
+ 	
+ Node 0/RP1 [RP]
+    Active Packages: 2
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+       ncs6k-sysadmin-system-6.5.1.14-r65109I.CSCcv11111
+ 	
+ Node 0/1 [LC]
+    Active Packages: 2
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+       ncs6k-sysadmin-system-6.5.1.14-r65109I.CSCcv11111
+ 	
+ Node 0/5 [LC]
+    Active Packages: 2
+       ncs6k-sysadmin-6.5.1.09I version=6.5.1.09I [Boot image]
+       ncs6k-sysadmin-system-6.5.1.14-r65109I.CSCcv11111
+ 	
