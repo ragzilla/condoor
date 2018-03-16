@@ -1,0 +1,16 @@
+
+
+Cisco IOS XR Software, Version 6.5.1.09I
+Copyright (c) 2013-2018 by Cisco Systems, Inc.
+
+Build Information:
+ Built By     : smallesw
+ Built On     : Wed Feb 28 13:05:03 IST 2018
+ Build Host   : bgl-ads-4324
+ Workspace    : /nobackup/smallesw/65109I
+ Version      : 6.5.1.09I
+ Location     : /opt/cisco/XR/packages/
+
+cisco NCS-6000 () processor 
+System uptime is 4 days, 5 hours, 11 minutes
+

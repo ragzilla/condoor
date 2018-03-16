@@ -1,0 +1,18 @@
+
+Thu Mar  15 15:48:44.630 UTC
+ Node 0/RP0 [RP]
+    Inactive Packages:
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.admin
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.host
+ Node 0/RP1 [RP]
+    Inactive Packages:
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.admin
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.host
+ Node 0/1 [LC]
+    Inactive Packages:
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.admin
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.host
+ Node 0/5 [LC]
+    Inactive Packages:
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.admin
+       ncs6k-sysadmin-hostos-6.5.1.13-r65109I.CSCho77777.host

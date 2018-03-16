@@ -1,0 +1,5 @@
+
+Thu Mar  15 15:48:45.851 UTC
+  
+ Name: Rack 0                Descr: Cisco PANINI Proto 8-Slots Line Card Chassis                
+ PID: PROTO-L-CHASSIS        VID: V01                   SN: FMP12180270 

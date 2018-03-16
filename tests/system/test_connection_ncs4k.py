@@ -43,7 +43,7 @@ class TestNCS4KConnection(CondoorTestCase):
 
         conn.disconnect()
 
-    def test_NCS4K_2_discovery(self):
+    def test_NCS4K_2_rediscovery(self):
         """NCS4k: Test whether the cached information is used"""
 
         urls = ["telnet://admin:admin@127.0.0.1:10023"]
