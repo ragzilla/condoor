@@ -25,6 +25,8 @@ driver:
     # Wait for the term len when executing admin/calvados mode commands. This is required to determine
     # whether the 'admin' command was sent or 'admin .....' where the output of the command must be captured.
     calvados_term_wait_time: 2
+    planes:
+      admin: "admin"
 
   XR:
     planes:
