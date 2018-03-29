@@ -68,7 +68,7 @@ generic:
     description: 'Connection timeout'
 
   authentication_error:
-    pattern: '% Authentication failed|not authorized|Login incorrect|Authentication failed'
+    pattern: '% Authentication failed|not authorized|Login incorrect|[\r\n]Authentication failed'
     description: 'Authentication error'
 
 
