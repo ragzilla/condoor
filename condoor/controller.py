@@ -49,7 +49,7 @@ class Controller(object):
         else:
             self._connection.log("Spawning command: '{}'".format(command))
             env = os.environ
-            env['TERM'] = 'vt100'  # to avoid color control characters and make sure other env not intact, esp. PATH
+            env['TERM'] = 'vt220'  # to avoid color control characters and make sure other env not intact, esp. PATH
             try:
                 self._session = pexpect.spawn(
                     command,
@@ -208,3 +208,8 @@ class Controller(object):
     def after(self):
         """Return text that was matched by the expected pattern."""
         return self._session.after if self._session else None
+
+    @property
+    def match(self):
+        """Return the SRE Match object."""
+        return self._session.match
