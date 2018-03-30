@@ -87,11 +87,11 @@ class Driver(XRDriver):
 
         # Big thanks to calvados developers for make this FSM such complex ;-)
         #                    0                         1                        2                        3
-        events = [self.syntax_error_re, self.connection_closed_re, expected_string, self.press_return_re,
-                  #        4           5                 6                7               8
-                  self.more_re, pexpect.TIMEOUT, pexpect.EOF, self.calvados_re, self.calvados_connect_re,
-                  #     9                               10                  11                     12
-                  self.calvados_term_length, ADMIN_USERNAME_PROMPT, ADMIN_PASSWORD_PROMPT, self.authentication_error_re]
+        events = [self.syntax_error_re, self.connection_closed_re, self.authentication_error_re, expected_string,
+                  #        4                  5                 6             7               8
+                  self.press_return_re, self.more_re, pexpect.TIMEOUT, pexpect.EOF, self.calvados_re,
+                  #     9                             10                  11                     12
+                  self.calvados_connect_re, self.calvados_term_length, ADMIN_USERNAME_PROMPT, ADMIN_PASSWORD_PROMPT]
 
         # add detected prompts chain
         events += self.device.get_previous_prompts()  # without target prompt
