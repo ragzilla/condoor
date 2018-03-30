@@ -45,7 +45,7 @@ class TestASR9KConnection(CondoorTestCase):
 
         conn.disconnect()
 
-    def test_ASR9K_2_discovery(self):
+    def test_ASR9K_2_rediscovery(self):
         """ASR9k: Test whether the cached information is used"""
         urls = ["telnet://admin:admin@127.0.0.1:10023"]
         conn = condoor.Connection("host", urls, log_session=self.log_session, log_level=self.log_level)

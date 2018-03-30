@@ -94,7 +94,7 @@ class FSM(object):
             return "FSM Context:E={},S={},FI={},M='{}'".format(
                 self.event, self.state, self.finished, self.msg)
 
-    def __init__(self, name, device, events, transitions, init_pattern=None, timeout=300, searchwindowsize=-1,
+    def __init__(self, name, device, events, transitions, init_pattern=None, timeout=300, searchwindowsize=None,
                  max_transitions=20):
         """Initialize FSM object.
 

@@ -126,7 +126,7 @@ def a_stays_connected(ctx):
 @action
 def a_unexpected_prompt(ctx):
     """Provide message when received humphost prompt."""
-    prompt = ctx.ctrl.after
+    prompt = ctx.ctrl.match.group(0)
     ctx.msg = "Received the jump host prompt: '{}'".format(prompt)
     ctx.device.connected = False
     ctx.finished = True
@@ -138,7 +138,6 @@ def a_connection_timeout(ctx):
     """Check the prompt and update the drivers."""
     prompt = ctx.ctrl.after
     ctx.msg = "Received the jump host prompt: '{}'".format(prompt)
-    print(ctx.msg)
     ctx.device.connected = False
     ctx.finished = True
     raise ConnectionTimeoutError("Unable to connect to the device.", ctx.ctrl.hostname)
@@ -147,7 +146,7 @@ def a_connection_timeout(ctx):
 @action
 def a_expected_prompt(ctx):
     """Update driver, config mode and hostname when received an expected prompt."""
-    prompt = ctx.ctrl.after
+    prompt = ctx.ctrl.match.group(0)
     ctx.device.update_driver(prompt)
     ctx.device.update_config_mode()
     ctx.device.update_hostname()

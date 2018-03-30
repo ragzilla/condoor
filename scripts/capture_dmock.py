@@ -94,6 +94,18 @@ def run(url):
         'show inventory',
         'show inventory chassis',
         'show users',
+        'show install active',
+        'show install inactive',
+        'show install committed',
+    ]
+
+    admin_cmd = [
+        'show install active',
+        'show install committed',
+        'show install inactive',
+        'show inventory',
+        'show inventory chassis',
+
     ]
 
     try:
@@ -127,6 +139,28 @@ def run(url):
                     fd.write(result)
                     click.echo("Filename {} written.".format(filename))
 
+        if conn.os_type == 'eXR':
+            conn.send('admin')
+            for command in admin_cmd:
+                try:
+                    result = ""
+                    filename = 'admin_' + normalize_filename(command)
+                    result = conn.send(command)
+                    click.echo("\nCommand: {}".format(command))
+
+                except condoor.CommandSyntaxError:
+                    click.echo("Command unknown: {}".format(command))
+                    result = conn._chain.ctrl._session.linesep.join(
+                        [conn._chain.ctrl._session.before, conn._chain.ctrl._session.after])
+
+                finally:
+                    fullpath = os.path.join(log_dir, filename)
+                    with open(fullpath, "w+") as fd:
+                        fd.write(result)
+                        click.echo("Filename {} written.".format(filename))
+            conn.send('exit')
+
+
     except (condoor.ConnectionError, condoor.ConnectionAuthenticationError, condoor.ConnectionTimeoutError,
             condoor.InvalidHopInfoError, condoor.CommandSyntaxError, condoor.CommandTimeoutError,
             condoor.CommandError, condoor.ConnectionError) as excpt:
@@ -138,6 +172,3 @@ def run(url):
 
 if __name__ == '__main__':
     run()  # pylint: disable=no-value-for-parameter
-
-
-
