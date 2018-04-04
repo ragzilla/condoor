@@ -52,6 +52,13 @@ def a_send_password(password, ctx):
 
 
 @action
+def a_send_newline(ctx):
+    """Send the CR/LF."""
+    ctx.ctrl.send("\r\n")
+    return True
+
+
+@action
 def a_authentication_error(ctx):
     """Raise ConnectionAuthenticationError exception and disconnect."""
     ctx.ctrl.disconnect()

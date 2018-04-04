@@ -40,6 +40,8 @@ class DeviceHandler(TelnetHandler):
     base_prompt = PROMPT
 
     def authCallback(self, username, password):
+        print("username: {!r}".format(username))
+        print("password: {!r}".format(password))
         if self.authNeedUser:
             if username != self.USERNAME:
                 raise Exception()
@@ -122,7 +124,11 @@ class DeviceHandler(TelnetHandler):
         username = None
         password = None
         if self.CONSOLE:
-            _ = self.readline()
+            print("CONSOLE")
+            line = self.readline()
+            print("line: {!r}".format(line))
+            line = self.readline()
+            print("line: {!r}".format(line))
         for _ in range(3):
             self.writeline(self.AUTH_MESSAGE)
             if self.authCallback:
