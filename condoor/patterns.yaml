@@ -138,7 +138,7 @@ eXR:
     description: 'Command syntax error'
 
 IOS:
-  prompt: '(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
+  prompt: '(?P<hostname>[\w\-\_\=\+\.]+)(\([^()]*\))?[#|>]'
   # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
   prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
@@ -155,7 +155,7 @@ IOS:
     description: 'Command syntax error'
 
 XE:
-  prompt: '(?P<hostname>[\w\-\_\=\+]+)(\([^()]*\))?[#|>]'
+  prompt: '(?P<hostname>[\w\-\_\=\+\.]+)(\([^()]*\))?[#|>]'
   # prompt_dynamic: '{prompt}(\([^()]*\))?[#>]'
   prompt_dynamic: '{hostname}(\([^()]*\))?[#>]'
   prompt_default: 'Router[#>]'
